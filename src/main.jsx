@@ -4,6 +4,7 @@ import { Menu, X, ChevronDown, ArrowUpRight, Sun, Leaf, HandHeart } from 'lucide
 import { FlowButtonContent } from './components/FlowButtonContent';
 import TextoRevelado from './components/TextoRevelado';
 import { ContactForm, AdminAccess } from './components/Accounts';
+import { SmoothScroll } from './components/SmoothScroll';
 const HeroTunnel = lazy(() => import('./components/HeroTunnel').then(m => ({default:m.HeroTunnel})));
 const solarPhotos = ['solar-1.jpg','solar-2.jpg','solar-3.jpg'].map(name => `${import.meta.env.BASE_URL}images/solar/${name}`);
 import './flow-button.css';
@@ -26,5 +27,5 @@ return <><Header menu={menu} setMenu={setMenu} setLogin={setLogin}/>
 <section id="contato" className="contact"><div className="page-frame"><div className="contact-title"><span className="section-label"><i/> VAMOS CONVERSAR</span><h2>CONTATO</h2></div><div className="contact-band"><SunMark/><div><span>VAMOS COMEÇAR?</span><h3>O FUTURO PODE SER MAIS SOLAR.</h3><p>Conte para a gente sobre sua empresa e seu interesse no projeto.</p></div><a href="#formulario">PREENCHER FORMULÁRIO ↗</a></div><div className="form-area" id="formulario"><div><h2>FORMULÁRIO</h2><p>Preencha seus dados para dar o primeiro passo.</p></div><ContactForm/></div></div></section></main>
 <footer className="site-footer"><div className="footer-rays" aria-hidden="true"/><div className="footer-shell"><div className="footer-brand reveal"><SunMark/><strong>CANOPA</strong><span>ENERGIA PARA UM FUTURO MELHOR</span><p>Uma nova forma de levar a energia do sol mais longe.</p></div><div className="footer-columns"><div className="reveal"><h3>CONHEÇA</h3><a href="#sobre">O projeto</a><a href="#impacto">Nosso impacto</a></div><div className="reveal"><h3>PARTICIPE</h3><a href="#como-funciona">Como funciona</a><a href="#contato">Fale com a gente</a></div><div className="reveal"><h3>ACESSO</h3><button onClick={()=>{setSent(false);setLogin(true)}}>Entrar na CANOPA</button></div><div className="reveal"><h3>CANOPA</h3><a href="#inicio">Voltar ao início ↑</a></div></div><p className="footer-copyright">© {new Date().getFullYear()} CANOPA. Todos os direitos reservados.</p></div></footer>
 {login&&<AdminAccess onClose={()=>setLogin(false)} Logo={Logo} Lines={Lines}/>}</>}
-createRoot(document.getElementById('root')).render(<App/>);
+createRoot(document.getElementById('root')).render(<SmoothScroll><App/></SmoothScroll>);
 
