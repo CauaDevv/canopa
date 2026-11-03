@@ -29,3 +29,4 @@
 /* Lenis usa a rolagem do documento; a ?rea de login mant?m sua pr?pria rolagem. */
 html{scroll-behavior:auto;scroll-padding-top:75px}.login-page{overscroll-behavior:contain}
 .logo img{display:block;width:100%;height:auto}
+.hero-sun{object-fit:contain}
