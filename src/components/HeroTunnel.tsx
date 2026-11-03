@@ -50,8 +50,8 @@ const OPACIDADE_FOTO = 0.85
 const COMPRIMENTO_TOTAL = TOTAL_SEGMENTOS * PROFUNDIDADE_SEGMENTO
 
 /* Chance de uma célula receber foto (o original sorteia por face) */
-const CHANCE_PISO_PAREDE = 0.5 // Math.random() > 0.8
-const CHANCE_TETO = 0.35 // Math.random() > 0.88
+const CHANCE_PISO_PAREDE = 0.16 // Math.random() > 0.8
+const CHANCE_TETO = 0.09 // Math.random() > 0.88
 
 /*
  * As fotos saíram do Unsplash e vieram para `public/images/tunel/`.
