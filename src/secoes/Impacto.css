@@ -1,0 +1,64 @@
+.impact { background: #f7fcfb; }
+.impact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6%; align-items: center; padding: 105px 3.5%; }
+
+.impact-copy { padding-right: 8%; }
+.impact-copy p { line-height: 1.8; color: #56777d; font-size: 15px; max-width: 560px; }
+.impact-copy .lead { font-size: 19px; line-height: 1.5; color: #24535c; }
+
+.impact-points { margin-top: 35px; display: grid; gap: 0; }
+/* A linha divisória é um pseudo-elemento (não border) para o GSAP poder traçá-la: --linha vai de 0 a 1. */
+.impact-points span {
+  position: relative;
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  padding: 17px 0 16px;
+  font-size: 11px;
+  letter-spacing: .11em;
+  font-weight: 700;
+  color: #367882;
+  transition: translate .45s var(--ease-sol), color .3s;
+}
+.impact-points span:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: #d6e9e7;
+  transform: scaleX(var(--linha, 1));
+  transform-origin: 0 50%;
+}
+.impact-points b { font-weight: inherit; }
+.impact-points svg { width: 20px; color: #0ab6c1; transition: rotate .5s var(--ease-sol); }
+@media (hover: hover) and (pointer: fine) {
+  .impact-points span:hover { translate: 8px 0; color: #058c9b; }
+  .impact-points span:hover svg { rotate: 24deg; }
+}
+
+.impact-photo { position: relative; min-height: 410px; overflow: hidden; }
+.impact-photo img { position: absolute; width: 100%; height: 100%; object-fit: cover; }
+@media (prefers-reduced-motion: no-preference) {
+  .impact-photo img { height: 118%; top: -9%; }
+}
+/* O amanhecer: luz dourada que sobe pela base da foto (só com movimento permitido). */
+.impact-amanhecer {
+  display: none;
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 80%;
+  pointer-events: none;
+  background: radial-gradient(ellipse 75% 95% at 50% 100%, rgba(255, 200, 117, .85) 0%, rgba(255, 200, 117, .3) 42%, transparent 74%);
+  mix-blend-mode: soft-light;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .impact-amanhecer { display: block; }
+}
+.impact-photo .brand-mark { position: absolute; width: 170px; height: auto; right: 20px; bottom: 20px; color: #fff; opacity: .5; }
+
+@media (max-width: 950px) { .impact-grid { gap: 5%; } }
+@media (max-width: 700px) {
+  .impact-grid { grid-template-columns: 1fr; padding: 65px 6%; gap: 35px; }
+  .impact-photo { min-height: 300px; }
+}

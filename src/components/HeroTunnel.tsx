@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { useReducedMotion } from 'motion/react'
+import { useMediaQuery } from './use-media-query'
 import {
   BufferGeometry,
   Color,
@@ -136,12 +136,12 @@ export function HeroTunnel({
 }: HeroTunnelProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const reduceMotion = useReducedMotion()
+  const reduceMotion = useMediaQuery('(prefers-reduced-motion: reduce)')
   // O suporte a WebGL é decidido já na primeira renderização: sem ele, o
   // fundo estático entra direto, sem um frame de canvas vazio.
   const [semWebgl, setSemWebgl] = useState(() => typeof WebGLRenderingContext === 'undefined')
 
-  const estatico = reduceMotion === true || semWebgl
+  const estatico = reduceMotion || semWebgl
 
   useEffect(() => {
     if (estatico) return

@@ -1,0 +1,50 @@
+.site-footer { position: relative; overflow: hidden; isolation: isolate; background: #073e48; color: #e5f4ee; padding: 0; }
+
+/* Raios do sol atrás do rodapé; balançam de leve em torno do ponto de origem (acima do topo). */
+.footer-rays {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  transform-origin: 50% -35%;
+  background:
+    radial-gradient(ellipse at 50% -30%, #f2bd6f80, transparent 53%),
+    repeating-conic-gradient(from 245deg at 50% -35%, transparent 0deg, #e7c47b12 4deg, transparent 8deg);
+  mask-image: linear-gradient(black, transparent 90%);
+  animation: balanco 14s ease-in-out infinite alternate;
+}
+@keyframes balanco { from { rotate: -2.5deg; } to { rotate: 2.5deg; } }
+
+.footer-shell { width: min(1100px, 88%); margin: auto; padding: 90px 0 30px; }
+.footer-brand { display: flex; align-items: center; flex-direction: column; text-align: center; }
+.footer-brand .footer-logo { display: block; width: 190px; height: auto; }
+.footer-brand > span { font-size: 10px; letter-spacing: .22em; color: #f2c77f; margin-top: 8px; }
+.footer-brand p { color: #bad4d0; font-size: 14px; margin-top: 22px; }
+
+.footer-columns { display: grid; grid-template-columns: repeat(4, 1fr); gap: 30px; margin-top: 65px; padding-top: 40px; border-top: 1px solid #e3cb8e30; }
+.footer-columns h3 { font: 600 11px 'DM Sans', sans-serif; letter-spacing: .17em; color: #edc979; margin: 0 0 18px; }
+.footer-columns a, .footer-columns button {
+  display: block;
+  width: fit-content;
+  /* área de toque de 28px+ sem deslocar o texto: o padding é compensado pela margem negativa */
+  padding: 4px 0;
+  margin: -4px 0 9px;
+  background: none;
+  border: 0;
+  color: #c3ddda;
+  font-size: 14px;
+  transition: color .2s, translate .3s var(--ease-sol);
+}
+.footer-columns a:hover, .footer-columns button:hover { color: #ffd18b; translate: 4px 0; }
+
+.footer-copyright { margin: 45px 0 0; padding-top: 25px; border-top: 1px solid #e3cb8e30; text-align: center; color: #91b8b5; font-size: 12px; }
+
+@media (max-width: 700px) {
+  .footer-shell { padding-top: 70px; }
+  .footer-columns { grid-template-columns: repeat(2, 1fr); }
+  .footer-columns a, .footer-columns button { padding: 12px 0; margin: -12px 0 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .footer-rays { animation: none; }
+}

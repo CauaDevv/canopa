@@ -1,0 +1,42 @@
+/* Tela de acesso e painel administrativo (a lógica está em components/Accounts.jsx). */
+.login-page { position: fixed; inset: 0; background: #f4fcfb; z-index: 30; overflow: auto; overscroll-behavior: contain; }
+.login-layout { width: min(1250px, 88%); min-height: 100%; margin: auto; display: grid; grid-template-columns: 1fr 1.2fr; gap: 10%; align-items: center; }
+.login-brand, .login-card { position: relative; z-index: 2; }
+.login-brand .logo { width: 300px; font-size: 55px; }
+.login-brand p { color: #7b8c8d; font-size: 19px; }
+.login-card { min-height: 670px; border: 1px solid #254348; border-radius: 70px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px; }
+.login-form { width: 100%; max-width: 410px; }
+.login-form h2 { font-size: 40px; }
+.login-form label { font: 15px 'DM Sans'; letter-spacing: 0; margin: 25px 0 0; }
+.login-form input { background: white; border: 1px solid #98adad; border-radius: 8px; }
+.login-form small { color: #9aafae; font-size: 11px; }
+.login-form .canopa-flow { width: 100%; margin-top: 35px; }
+.login-form > p { text-align: center; color: #8a9c9d; }
+.login-form > p a { color: #04aebd; }
+.login-divider { height: 1px; background: #d2e1df; margin: 35px 0; }
+.login-disclaimer { font-size: 11px; color: #8a9c9d; text-align: center; margin: 70px 0 0; }
+.login-close { position: fixed; right: 35px; top: 30px; z-index: 3; border: 0; background: none; color: #365d60; min-width: 44px; min-height: 44px; }
+
+.auth-error { color: #a73131 !important; font-size: 13px; line-height: 1.5; }
+.admin-panel { position: relative; z-index: 2; max-width: 1050px; margin: 0 auto; padding: 100px 25px; }
+.admin-heading { display: flex; justify-content: space-between; align-items: center; gap: 25px; }
+.admin-heading p, .admin-empty { color: #678387; }
+.admin-logout { border: 1px solid #a8d4d2; background: #fff; color: #166571; padding: 12px 20px; border-radius: 6px; }
+.admin-list { display: grid; gap: 14px; margin-top: 35px; }
+.admin-list article { background: white; border: 1px solid #d5e8e5; padding: 22px; border-radius: 8px; }
+.admin-card-top, .admin-details { display: flex; justify-content: space-between; gap: 15px; }
+.admin-card-top time, .admin-details { font-size: 13px; color: #6d8b8d; }
+.admin-details { justify-content: flex-start; margin-top: 10px; flex-wrap: wrap; }
+.admin-details a { color: #078f9c; }
+.admin-list article p { color: #355d61; white-space: pre-wrap; line-height: 1.6; margin-bottom: 0; }
+
+@media (max-width: 700px) {
+  .login-layout { grid-template-columns: 1fr; padding: 90px 0 40px; gap: 30px; }
+  .login-brand .logo { width: 180px; font-size: 34px; }
+  .login-brand p { font-size: 15px; }
+  .login-card { border-radius: 35px; min-height: 0; padding: 40px 25px; }
+  .login-disclaimer { margin-top: 40px; }
+  .login-form h2 { font-size: 34px; }
+  .admin-heading { align-items: flex-start; flex-direction: column; }
+  .admin-card-top { flex-direction: column; }
+}

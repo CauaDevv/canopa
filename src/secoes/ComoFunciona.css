@@ -1,0 +1,61 @@
+.process { position: relative; overflow: hidden; background: #09b6c4; }
+
+/*
+  Raios de sol atrás da seção. Um círculo gigante com cones de luz, mascarado em
+  volta do centro; o GSAP gira o conjunto preso à rolagem. O centro é o do círculo,
+  então rotacionar não revela borda. Só existe com movimento permitido.
+*/
+.process-raios { display: none; }
+@media (prefers-reduced-motion: no-preference) {
+  .process-raios {
+    display: block;
+    position: absolute;
+    left: 50%;
+    top: 22%;
+    width: 170vw;
+    aspect-ratio: 1;
+    translate: -50% -50%;
+    border-radius: 50%;
+    pointer-events: none;
+    /* alfa baixo: o texto branco da seção já tem pouco contraste sobre o turquesa, os raios não podem piorar */
+    background: repeating-conic-gradient(from 0deg, rgba(255, 255, 255, .085) 0deg 5deg, transparent 5deg 15deg);
+    mask-image: radial-gradient(circle, #000 0%, transparent 46%);
+  }
+}
+
+.process-inner { position: relative; padding: 90px 4%; color: white; }
+
+.steps { display: grid; grid-template-columns: repeat(3, 1fr); margin-top: 60px; border-top: 1px solid #a5e4e7; border-bottom: 1px solid #a5e4e7; }
+.step {
+  --spot: rgba(255, 255, 255, .16);
+  position: relative;
+  padding: 35px 40px;
+  border-right: 1px solid #a5e4e7;
+  transition: background-color .45s ease;
+}
+.step:last-child { border-right: 0; }
+.step > svg {
+  width: 35px;
+  height: 35px;
+  stroke-width: 1.2;
+  color: #ffdd9b;
+  transition: translate .5s var(--ease-sol), rotate .5s var(--ease-sol), color .3s;
+}
+.number { display: block; font: 500 14px 'Barlow Condensed'; letter-spacing: .15em; margin-bottom: 30px; opacity: .7; transition: color .3s; }
+.step h3 { font-size: 28px; letter-spacing: .08em; margin: 20px 0 12px; }
+.step p { font-size: 14px; line-height: 1.7; color: #e1fafa; max-width: 270px; }
+.process-note { font-size: 11px; color: #d9f6f7; margin-top: 25px; }
+
+@media (hover: hover) and (pointer: fine) {
+  .step:hover { background-color: rgba(255, 255, 255, .06); }
+  .step:hover > svg { translate: 0 -5px; rotate: -8deg; color: #fff; }
+  .step:hover .number { color: #ffdd9b; }
+}
+
+@media (max-width: 700px) {
+  .process-inner { padding: 70px 6%; }
+  .steps { grid-template-columns: 1fr; margin-top: 35px; }
+  .step { border-right: 0; border-bottom: 1px solid #a5e4e7; padding: 28px 15px; }
+  .step:last-child { border: 0; }
+  .number { margin-bottom: 15px; }
+}

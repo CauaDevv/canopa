@@ -1,0 +1,68 @@
+.contact { background: #f7fcfb; }
+.contact-title { padding: 65px 6% 15px; }
+.contact-title h2 { margin-bottom: 0; }
+
+.contact-band {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 60px;
+  min-height: 225px;
+  padding: 35px 5%;
+  overflow: hidden;
+  background: #08b7c6;
+  color: #fff;
+}
+.contact-band span { font-size: 10px; letter-spacing: .18em; }
+.contact-band h3 { font-size: 30px; letter-spacing: .08em; margin: 12px 0; }
+.contact-band p { font-size: 14px; }
+.contact-band > a {
+  /* área de toque maior sem mexer no texto: o respiro de cima é compensado pela margem negativa */
+  padding: 14px 0 8px;
+  margin-top: -14px;
+  border-bottom: 1px solid white;
+  font-size: 11px;
+  letter-spacing: .1em;
+  font-weight: 700;
+  transition: letter-spacing .35s var(--ease-sol), opacity .25s;
+}
+.contact-band > a:hover { letter-spacing: .16em; }
+.contact-band .brand-mark { flex-shrink: 0; width: 180px; height: auto; color: #fff; opacity: .2; }
+
+/* varredura de luz que atravessa a faixa quando ela abre (só com movimento permitido) */
+.contact-brilho { display: none; }
+@media (prefers-reduced-motion: no-preference) {
+  .contact-band span.contact-brilho {
+    display: block;
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(100deg, transparent 32%, rgba(255, 255, 255, .24) 50%, transparent 68%);
+  }
+}
+
+.form-area { padding: 55px 6% 85px; }
+.form-area h2 { margin: 0; }
+.form-area > div > p { font-size: 14px; color: #799498; }
+.form-area form { margin-top: 35px; }
+.form-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; }
+
+input:user-invalid, textarea:user-invalid { border-color: #c25b5b; box-shadow: 0 0 0 4px rgba(194, 91, 91, .12); }
+
+.submit { float: right; }
+.form-message { clear: both; padding-top: 15px; color: #5a7c7e; font-size: 13px; animation: aparecer .5s var(--ease-sol); }
+@keyframes aparecer { from { opacity: 0; translate: 0 8px; } }
+
+@media (max-width: 700px) {
+  .contact-title { padding: 55px 6% 15px; }
+  .contact-band { align-items: flex-start; flex-direction: column; gap: 15px; }
+  .contact-band .brand-mark { position: absolute; right: -30px; bottom: 10px; }
+  .contact-band h3 { font-size: 25px; }
+  .form-area { padding: 45px 6% 75px; }
+  .form-row { grid-template-columns: 1fr; gap: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .form-message { animation: none; }
+}

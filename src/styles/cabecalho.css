@@ -1,0 +1,118 @@
+.header {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 10;
+  background: transparent;
+  border-bottom: 1px solid transparent;
+  transition: background-color .3s, border-color .3s, box-shadow .3s;
+}
+.header.is-scrolled { background: rgba(247, 252, 251, .97); border-color: #d9ebea; box-shadow: 0 6px 20px #0b46510d; }
+
+.header-inner {
+  width: min(1400px, 88%);
+  height: 88px;
+  margin: auto;
+  display: flex;
+  align-items: center;
+  gap: 48px;
+  transition: height .3s var(--ease-sol);
+}
+.header.is-scrolled .header-inner { height: 65px; }
+
+/* Barra de progresso: a luz do dia enche conforme a página é lida (escala vem do GSAP). */
+.scroll-progress {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #06aebc, var(--ouro));
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  pointer-events: none;
+}
+
+.logo {
+  width: 140px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #06b5c3;
+  line-height: .85;
+  letter-spacing: .13em;
+  font-size: 27px;
+  font-weight: 600;
+}
+.logo img { display: block; width: 100%; height: auto; }
+/* `scale` (e não transform): o GSAP escreve transform inline na abertura e venceria o CSS */
+.header .logo { transition: scale .3s; transform-origin: left center; }
+.header.is-scrolled .logo { scale: .86; }
+
+.navigation { display: flex; align-items: center; gap: 35px; }
+.navigation a { display: flex; align-items: center; gap: 8px; font-size: 15px; min-height: 44px; position: relative; transition: color .25s; }
+.navigation a:after {
+  content: '';
+  position: absolute;
+  bottom: 8px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: #06aebc;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform .3s var(--ease-sol);
+}
+.navigation a:hover, .hero-link:hover { color: #00b4c1; }
+.navigation a:hover:after, .navigation a:focus-visible:after { transform: scaleX(1); }
+/* seção que está sob os olhos: fio dourado-turquesa permanente */
+.navigation a.is-active { color: #058c9b; }
+.navigation a.is-active:after { height: 2px; transform: scaleX(1); background: linear-gradient(90deg, #06aebc, var(--ouro)); }
+
+.header-actions { margin-left: auto; display: flex; align-items: center; gap: 25px; }
+.enter { border: 0; background: none; color: #08aebd; font-weight: 600; min-height: 44px; padding: 0 4px; transition: color .25s; }
+.enter:hover { color: #05808d; }
+.menu-toggle { display: none; }
+
+@media (max-width: 950px) {
+  .header-inner { gap: 25px; }
+  .navigation { gap: 16px; }
+  .navigation a { font-size: 13px; }
+  .header-actions { gap: 12px; }
+}
+
+@media (max-width: 700px) {
+  .header-inner, .header.is-scrolled .header-inner { height: 75px; }
+  .header-inner { width: 90%; justify-content: space-between; }
+  .logo { width: 110px; font-size: 22px; }
+  .menu-toggle { display: grid; place-items: center; width: 44px; height: 44px; margin-inline: -4px; border: 0; background: none; color: #13606a; }
+  .header-actions { margin-left: auto; }
+  /* o invólucro do botão magnético sai junto com o botão, senão sobra um item vazio e o gap empurra o "Entrar" */
+  .header-actions .ima { display: none; }
+
+  /* o menu abre como uma cortina e os links entram em sequência */
+  .navigation {
+    position: absolute;
+    top: 75px;
+    left: 0;
+    right: 0;
+    background: #f7fcfb;
+    padding: 25px 5%;
+    flex-direction: column;
+    align-items: flex-start;
+    border-bottom: 1px solid #b9d8d6;
+    visibility: hidden;
+    clip-path: inset(0 0 100% 0);
+    transition: clip-path .45s var(--ease-sol), visibility 0s .45s;
+  }
+  .navigation.open { visibility: visible; clip-path: inset(0); transition: clip-path .45s var(--ease-sol); }
+  .navigation a { opacity: 0; translate: 0 -10px; transition: opacity .35s, translate .35s var(--ease-sol), color .25s; }
+  .navigation.open a { opacity: 1; translate: 0 0; }
+  .navigation.open a:nth-child(1) { transition-delay: .08s; }
+  .navigation.open a:nth-child(2) { transition-delay: .14s; }
+  .navigation.open a:nth-child(3) { transition-delay: .2s; }
+  .navigation.open a:nth-child(4) { transition-delay: .26s; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .header, .header-inner, .header .logo { transition: none; }
+}

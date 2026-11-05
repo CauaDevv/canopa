@@ -1,0 +1,41 @@
+.journey { background: #e3f5f5; }
+.journey-inner { padding: 100px 5%; display: grid; grid-template-columns: 1fr 1fr; gap: 10%; }
+.journey-copy { position: sticky; top: 100px; align-self: start; }
+.journey-copy p { font-size: 14px; line-height: 1.75; color: #63868a; }
+
+.journey-track { position: relative; border-left: 1px solid #82c8ca; }
+/* O fio de luz: cobre o trilho e enche de cima para baixo (escala vem do GSAP). */
+.journey-fio { position: absolute; left: -2px; top: 0; bottom: 0; width: 3px; pointer-events: none; }
+.journey-fio i { display: block; height: 100%; border-radius: 2px; background: linear-gradient(#06aebc, var(--ouro)); transform-origin: 50% 0; }
+
+.journey-track article { position: relative; padding: 10px 0 40px 35px; transition: opacity .7s ease; }
+.journey-track article:before {
+  content: '';
+  position: absolute;
+  left: -6px;
+  top: 15px;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: #09b4c1;
+  transition: background-color .5s, scale .5s var(--ease-sol);
+}
+.journey-track article > * { transition: translate .8s var(--ease-sol); }
+/* etapa que o fio ainda não alcançou (classe posta e tirada pelo JavaScript) */
+.journey-track article.is-apagado { opacity: .38; }
+.journey-track article.is-apagado:before { background: #a9d9db; scale: .72; }
+.journey-track article.is-apagado > * { translate: 14px 0; }
+.journey-track article.is-aceso:before { animation: pulso 1.1s ease-out; }
+@keyframes pulso {
+  0% { box-shadow: 0 0 0 0 rgba(244, 190, 105, .75); }
+  100% { box-shadow: 0 0 0 16px rgba(244, 190, 105, 0); }
+}
+
+.journey-track span { font-size: 10px; font-weight: 700; letter-spacing: .16em; color: #08a6b4; }
+.journey-track h3 { font-size: 28px; letter-spacing: .07em; margin: 14px 0; color: #164b53; }
+.journey-track p { font-size: 14px; line-height: 1.75; color: #63868a; }
+
+@media (max-width: 700px) {
+  .journey-inner { grid-template-columns: 1fr; padding: 70px 6%; gap: 35px; }
+  .journey-copy { position: static; }
+}

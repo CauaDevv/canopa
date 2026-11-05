@@ -1,0 +1,40 @@
+/*
+  Duas fitas cruzando entre a informação e o contato. `rotate`/`translate` são
+  propriedades individuais de propósito: o GSAP é dono do `transform` (entrada
+  lateral, inclinação pela velocidade da rolagem) e elas compõem com ele.
+*/
+.faixas { position: relative; overflow: hidden; height: 290px; background: #f7fcfb; }
+
+.faixa {
+  position: absolute;
+  left: -4%;
+  right: -4%;
+  top: 50%;
+  display: flex;
+  align-items: center;
+  height: 92px;
+  overflow: hidden;
+  white-space: nowrap;
+  translate: 0 -50%;
+}
+.faixa--cheia { top: calc(50% - 24px); rotate: -2.2deg; background: #09b6c4; color: #fff; }
+.faixa--contorno { top: calc(50% + 24px); rotate: 2.2deg; background: #07535c; color: var(--orange); box-shadow: 0 18px 30px -22px rgba(7, 83, 92, .55); }
+
+.faixa__trilho { display: flex; width: max-content; }
+.faixa__metade { display: flex; flex-shrink: 0; }
+.faixa__item {
+  display: inline-flex;
+  align-items: center;
+  gap: .55em;
+  padding-right: .55em;
+  font: 500 clamp(30px, 3.6vw, 50px) / 1 'Barlow Condensed', sans-serif;
+  letter-spacing: .16em;
+}
+.faixa__sol { width: 2.1em; height: auto; flex-shrink: 0; }
+
+@media (max-width: 700px) {
+  .faixas { height: 230px; }
+  .faixa { height: 70px; }
+  .faixa--cheia { top: calc(50% - 18px); }
+  .faixa--contorno { top: calc(50% + 18px); }
+}

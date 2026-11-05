@@ -1,0 +1,178 @@
+/* ---------- Tokens ---------- */
+:root {
+  font-family: 'DM Sans', sans-serif;
+  color: #173a40;
+  background: #f5fbfa;
+  /* usados por flow-button.css */
+  --navy: #07535c;
+  --white: #fff;
+  --orange: #f9ca78;
+  --orange-400: #f9ca78;
+  /* marca */
+  --turquesa: #04b7c7;
+  --turquesa-escuro: #076e7a;
+  --ouro: #f4be69;
+  --ease-sol: cubic-bezier(.22, 1, .36, 1);
+}
+
+/* ---------- Reset ---------- */
+* { box-sizing: border-box; }
+/* O Lenis cuida da rolagem das âncoras; scroll-behavior:smooth brigaria com ele. */
+html { scroll-behavior: auto; scroll-padding-top: 75px; }
+body { margin: 0; }
+a { color: inherit; text-decoration: none; }
+button, input, textarea { font: inherit; }
+button { cursor: pointer; }
+
+/* Lenis (as regras oficiais de lenis.css, mantidas aqui para a página e o login) */
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+.lenis.lenis-stopped { overflow: hidden; }
+
+/* Foco visível em tudo que é interativo (o botão da marca tem o seu próprio). */
+a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible {
+  outline: 2px solid #05adba;
+  outline-offset: 3px;
+}
+
+/* Fonte local evita a troca tardia de largura no título. */
+@font-face {
+  font-family: CanopaHeadline;
+  src: url('../assets/barlow-condensed-500.ttf') format('truetype');
+  font-style: normal;
+  font-weight: 500;
+  font-display: block;
+}
+
+/* ---------- Tipografia ---------- */
+h1, h2, h3 { font-family: 'Barlow Condensed', sans-serif; font-weight: 500; line-height: 1.1; }
+h2 { font-size: clamp(40px, 4vw, 57px); letter-spacing: .09em; margin: 20px 0 25px; color: #163d47; }
+/* o acento do título é uma classe explícita: o SplitText cria <span> por linha e `h2 span` pintaria o título inteiro */
+h2 .acento { color: #05acb9; }
+
+.section { padding: 0; }
+.page-frame { width: min(1420px, 89%); margin: auto; }
+
+.section-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 10px;
+  letter-spacing: .2em;
+  font-weight: 700;
+  color: #529298;
+}
+.section-label i { width: 25px; height: 2px; background: #fac46f; }
+
+/* Cabeçalho de seção centralizado: base é a seção turquesa (Como funciona);
+   as seções claras trocam as cores em seus próprios arquivos. */
+.section-heading { text-align: center; }
+.section-heading .section-label { justify-content: center; color: #d5f8f7; }
+.section-heading h2, .section-heading h2 .acento { color: #fff; }
+.section-heading p { color: #ddf8f8; }
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---------- Botão da marca ---------- */
+.canopa-flow.flow-button {
+  --flow-fill: var(--turquesa-escuro);
+  --flow-ink: white;
+  color: white;
+  background: var(--turquesa);
+  border-radius: 10px;
+  padding: 12px 48px;
+  font-size: 14px;
+  font-weight: 700;
+  min-height: 46px;
+}
+/* invólucro do botão magnético: quem se move é ele, não o link */
+.ima { display: inline-flex; }
+
+/* ---------- Texto revelado (SplitText) ---------- */
+/*
+  A máscara de cada linha recorta na caixa da linha, e os acentos das maiúsculas
+  (Ã, Ç, É) sobem além dela. A folga vertical deixa o acento inteiro sem mudar o layout.
+*/
+.linha-split-mask { padding-block: .14em; margin-block: -.14em; }
+/* com tag "span" o SplitText deixa a linha inline — e transform não age em inline */
+.linha-split, .linha-split-mask { display: block; }
+/* entre duas máscaras as margens negativas colapsam (vale a maior, não a soma): dobrar a de cima devolve a entrelinha */
+.linha-split-mask + .linha-split-mask { margin-top: -.28em; }
+/* no mobile o reveal é por palavra */
+.palavra-split, .palavra-split-mask { display: inline-block; }
+.palavra-split-mask { padding-block: .14em; margin-block: -.14em; }
+
+/* ---------- Spotlight: a luz segue o ponteiro dentro do card ---------- */
+/* O brilho fica ATRÁS do conteúdo (filhos z-index 1): por cima, ele desbotaria o texto sob o ponteiro. */
+.spot { position: relative; }
+.spot > * { position: relative; z-index: 1; }
+.spot::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .4s ease;
+  background: radial-gradient(340px circle at var(--mx, 50%) var(--my, 50%), var(--spot, rgba(255, 255, 255, .2)), transparent 70%);
+}
+@media (hover: hover) and (pointer: fine) {
+  .spot:hover::after { opacity: 1; }
+}
+
+/* ---------- Ondas de luz (hero e tela de acesso) ---------- */
+.lines { position: absolute; z-index: 1; pointer-events: none; width: 410px; height: 760px; opacity: .8; }
+.lines-left { left: -210px; top: -135px; transform: rotate(70deg); animation: wave-drift-left 14s ease-in-out infinite alternate; }
+.lines-right { right: -115px; top: -80px; transform: rotate(-15deg); animation: wave-drift-right 17s ease-in-out infinite alternate; }
+@keyframes wave-drift-left { to { transform: translate3d(15px, 20px, 0) rotate(74deg); } }
+@keyframes wave-drift-right { to { transform: translate3d(-15px, 22px, 0) rotate(-19deg); } }
+
+/* ---------- Formulários (contato e acesso) ---------- */
+label {
+  display: block;
+  font: 500 16px 'Barlow Condensed';
+  letter-spacing: .12em;
+  color: #254f56;
+  margin-bottom: 22px;
+  transition: color .25s;
+}
+label:focus-within { color: #05808d; }
+input, textarea {
+  display: block;
+  width: 100%;
+  border: 1px solid #d1e4e2;
+  background: #edf5f4;
+  padding: 15px;
+  margin-top: 10px;
+  outline: none;
+  color: #234d51;
+  font: 14px 'DM Sans';
+  letter-spacing: 0;
+  transition: border-color .25s, background-color .25s, box-shadow .25s;
+}
+input:hover, textarea:hover { border-color: #a9d4d2; }
+input:focus, textarea:focus { border-color: #05adba; background: #f6fbfb; box-shadow: 0 0 0 4px rgba(5, 173, 186, .14); }
+textarea { resize: vertical; }
+
+@media (max-width: 950px) { .lines { opacity: .55; } }
+@media (max-width: 700px) {
+  .page-frame { width: 92%; }
+  .lines { width: 260px; height: 550px; opacity: .4; }
+  .lines-left { left: -190px; }
+  .lines-right { right: -180px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *:before, *:after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+  .lines-left, .lines-right { animation: none; }
+}

@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useRef } from 'react'
 import { useMediaQuery } from './use-media-query'
 import type { ReactNode } from 'react'
-import { ReactLenis, type LenisRef } from 'lenis/react'
+import { ReactLenis, useLenis, type LenisRef } from 'lenis/react'
+import { ScrollTrigger } from '../lib/animacao'
+import { rolagem } from '../lib/rolagem'
 
 /**
  * Rolagem com inércia para a página inteira.
@@ -46,6 +48,20 @@ const PREFERE_MENOS_MOVIMENTO = '(prefers-reduced-motion: reduce)'
  */
 function useMovimentoReduzido() {
   return useMediaQuery(PREFERE_MENOS_MOVIMENTO)
+}
+
+/**
+ * Ponte Lenis → ScrollTrigger. O Lenis anima `scrollTop` por JavaScript; sem
+ * avisar o ScrollTrigger a cada passo, as animações presas ao scroll (scrub)
+ * ficariam um quadro atrás da página. Também publica a velocidade para as
+ * fitas, que aceleram com o gesto.
+ */
+function PonteScrollTrigger() {
+  useLenis((lenis) => {
+    ScrollTrigger.update()
+    rolagem.velocidade = lenis.velocity
+  })
+  return null
 }
 
 export function SmoothScroll({ children }: { children: ReactNode }) {
@@ -202,6 +218,7 @@ export function SmoothScroll({ children }: { children: ReactNode }) {
 
   return (
     <ReactLenis root ref={ref} options={opcoes}>
+      <PonteScrollTrigger />
       {children}
     </ReactLenis>
   )
