@@ -2,7 +2,7 @@ import { useMemo, useRef, useState } from 'react'
 import { Search, Sun } from 'lucide-react'
 import { gsap, MIDIA, useGSAP } from '../lib/animacao'
 import { ETAPAS, PROJETOS, TIPOS } from './dados-demo'
-import { decimal, moeda } from './formatos'
+import { decimal, moeda } from '../lib/formatos'
 import { StatusPill } from './TabelaProjetos'
 
 const normalizar = (s) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()

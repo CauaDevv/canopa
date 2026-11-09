@@ -1,14 +1,18 @@
 import { useRef } from 'react'
 import { ArrowUpRight, Sun } from 'lucide-react'
+import useQuandoPerto from '../hooks/useQuandoPerto'
 import { gsap, MIDIA, useGSAP } from '../lib/animacao'
 import { acenderPalavras, nascerFoto, parallaxFoto, revelarBlocos, revelarLinhas, revelarRotulos } from '../lib/revelar'
 import './Sobre.css'
 
 export default function Sobre() {
   const raiz = useRef(null)
+  // a animação só é montada quando a seção chega perto da tela (ver useQuandoPerto)
+  const perto = useQuandoPerto(raiz)
 
   useGSAP(
     () => {
+      if (!perto) return
       const mm = gsap.matchMedia()
       mm.add(MIDIA.movimento, () => {
         const r = raiz.current
@@ -38,7 +42,7 @@ export default function Sobre() {
         })
       })
     },
-    { scope: raiz },
+    { scope: raiz, dependencies: [perto] },
   )
 
   return (
@@ -49,6 +53,8 @@ export default function Sobre() {
             loading="lazy"
             decoding="async"
             src={`${import.meta.env.BASE_URL}images/fotos/paineis-campo.webp`}
+            srcSet={`${import.meta.env.BASE_URL}images/fotos/paineis-campo-480.webp 480w, ${import.meta.env.BASE_URL}images/fotos/paineis-campo-800.webp 800w, ${import.meta.env.BASE_URL}images/fotos/paineis-campo.webp 1200w`}
+            sizes="(max-width: 900px) 92vw, 46vw"
             width="1200"
             height="798"
             alt="Painéis solares sob o céu"

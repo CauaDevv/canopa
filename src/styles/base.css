@@ -35,15 +35,6 @@ a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visib
   outline-offset: 3px;
 }
 
-/* Fonte local evita a troca tardia de largura no título. */
-@font-face {
-  font-family: CanopaHeadline;
-  src: url('../assets/barlow-condensed-500.ttf') format('truetype');
-  font-style: normal;
-  font-weight: 500;
-  font-display: block;
-}
-
 /* ---------- Tipografia ---------- */
 h1, h2, h3 { font-family: 'Barlow Condensed', sans-serif; font-weight: 500; line-height: 1.1; }
 h2 { font-size: clamp(40px, 4vw, 57px); letter-spacing: .09em; margin: 20px 0 25px; color: #163d47; }

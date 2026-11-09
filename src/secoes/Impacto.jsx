@@ -1,6 +1,7 @@
 import { useRef } from 'react'
 import { HandHeart, Leaf, Sun } from 'lucide-react'
 import SimboloSol from '../components/ui/SimboloSol'
+import useQuandoPerto from '../hooks/useQuandoPerto'
 import { gsap, MIDIA, useGSAP } from '../lib/animacao'
 import { acenderPalavras, desenharIcone, nascerFoto, parallaxFoto, revelarBlocos, revelarLinhas, revelarRotulos } from '../lib/revelar'
 import { desenharSol } from '../lib/traco'
@@ -19,9 +20,12 @@ const PONTOS = [
 */
 export default function Impacto() {
   const raiz = useRef(null)
+  // a animação só é montada quando a seção chega perto da tela (ver useQuandoPerto)
+  const perto = useQuandoPerto(raiz)
 
   useGSAP(
     () => {
+      if (!perto) return
       const mm = gsap.matchMedia()
       mm.add(MIDIA.movimento, () => {
         const r = raiz.current
@@ -76,7 +80,7 @@ export default function Impacto() {
         })
       })
     },
-    { scope: raiz },
+    { scope: raiz, dependencies: [perto] },
   )
 
   return (
@@ -104,6 +108,8 @@ export default function Impacto() {
             loading="lazy"
             decoding="async"
             src={`${import.meta.env.BASE_URL}images/fotos/paineis-aerea.webp`}
+            srcSet={`${import.meta.env.BASE_URL}images/fotos/paineis-aerea-480.webp 480w, ${import.meta.env.BASE_URL}images/fotos/paineis-aerea-800.webp 800w, ${import.meta.env.BASE_URL}images/fotos/paineis-aerea.webp 1000w`}
+            sizes="(max-width: 900px) 92vw, 46vw"
             width="1000"
             height="749"
             alt="Painéis solares em uma paisagem aberta"

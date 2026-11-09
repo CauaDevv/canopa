@@ -1,12 +1,16 @@
 import { useRef } from 'react'
+import useQuandoPerto from '../hooks/useQuandoPerto'
 import { gsap, MIDIA, useGSAP } from '../lib/animacao'
 import './Rodape.css'
 
 export default function Rodape({ aoAcessar }) {
   const raiz = useRef(null)
+  // a animação só é montada quando a seção chega perto da tela (ver useQuandoPerto)
+  const perto = useQuandoPerto(raiz)
 
   useGSAP(
     () => {
+      if (!perto) return
       const mm = gsap.matchMedia()
       mm.add(MIDIA.movimento, () => {
         const r = raiz.current
@@ -47,7 +51,7 @@ export default function Rodape({ aoAcessar }) {
         })
       })
     },
-    { scope: raiz },
+    { scope: raiz, dependencies: [perto] },
   )
 
   return (
@@ -55,7 +59,7 @@ export default function Rodape({ aoAcessar }) {
       <div className="footer-rays" aria-hidden="true" />
       <div className="footer-shell">
         <div className="footer-brand">
-          <img className="footer-logo" src={`${import.meta.env.BASE_URL}images/canopa-logo.png`} width="1716" height="657" alt="CANOPA" />
+          <img className="footer-logo" src={`${import.meta.env.BASE_URL}images/canopa-logo-480.webp`} width="480" height="184" alt="CANOPA" />
           <span>CALIBRANDO O IMPACTO, ILUMINANDO O FUTURO</span>
           <p>Conectando pessoas e projetos por um futuro mais solar.</p>
         </div>

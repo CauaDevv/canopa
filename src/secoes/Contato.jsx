@@ -1,8 +1,10 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { X } from 'lucide-react'
 import FormularioContato from '../components/FormularioContato'
 import SimboloSol from '../components/ui/SimboloSol'
 import { gsap, MIDIA, useGSAP } from '../lib/animacao'
-import { revelarBlocos, revelarLinhas, revelarRotulos } from '../lib/revelar'
+import { chamarFormulario } from '../lib/formulario'
+import { revelarLinhas } from '../lib/revelar'
 import './Contato.css'
 
 const FALTAM = {
@@ -20,46 +22,78 @@ function textoDoStatus(p) {
   return `Falta: ${faltam.join(', ')}.`
 }
 
+const FOCAVEIS = 'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+
 /*
-  Fechamento da página. O formulário e o painel conversam: cada etapa concluída
-  acende uma parte do símbolo do sol (perfil = horizonte, nome = disco, contato =
-  raios, mensagem = haste). O painel é só reação ao estado — quem manda é o formulário.
+  Janela do formulário: NÃO faz parte do fluxo da página, só aparece por cima dela quando
+  alguém clica no botão final (ou em um link para o contato). Continua montada depois de
+  aberta pela primeira vez, então fechar e reabrir não perde o que foi digitado.
+  Cada etapa concluída acende uma parte do símbolo do sol (perfil = horizonte, nome =
+  disco, contato = raios, mensagem = haste); o painel só reage ao estado do formulário.
 */
-export default function Contato() {
+export default function Contato({ aberto, aoFechar }) {
   const raiz = useRef(null)
   const [p, setP] = useState({ perfil: false, nome: false, contato: false, mensagem: false, total: 0 })
 
+  // Esc fecha; Tab não escapa da janela (aria-modal)
+  useEffect(() => {
+    if (!aberto) return
+    const el = raiz.current
+    const aoTeclar = (e) => {
+      if (e.key === 'Escape') {
+        e.preventDefault()
+        aoFechar()
+        return
+      }
+      if (e.key !== 'Tab') return
+      const itens = [...el.querySelectorAll(FOCAVEIS)].filter((n) => n.getClientRects().length > 0)
+      if (!itens.length) return
+      const primeiro = itens[0]
+      const ultimo = itens[itens.length - 1]
+      const dentro = el.contains(document.activeElement)
+      if (e.shiftKey && (!dentro || document.activeElement === primeiro)) {
+        e.preventDefault()
+        ultimo.focus()
+      } else if (!e.shiftKey && (!dentro || document.activeElement === ultimo)) {
+        e.preventDefault()
+        primeiro.focus()
+      }
+    }
+    document.addEventListener('keydown', aoTeclar)
+    return () => document.removeEventListener('keydown', aoTeclar)
+  }, [aberto, aoFechar])
+
+  // a janela abriu: o formulário acende e o foco vai para o primeiro campo pendente
+  useEffect(() => (aberto ? chamarFormulario() : undefined), [aberto])
+
+  // entrada a cada abertura (sem ScrollTrigger: a janela é fixa, não rola com a página)
   useGSAP(
     () => {
+      if (!aberto) return
       const mm = gsap.matchMedia()
-      mm.add({ movimento: MIDIA.movimento, desktop: MIDIA.desktop }, (ctx) => {
-        if (!ctx.conditions.movimento) return
-        const { desktop } = ctx.conditions
+      mm.add(MIDIA.movimento, () => {
         const r = raiz.current
         const $ = (sel) => r.querySelector(sel)
-        const grade = $('.contato-grid')
         const painel = $('.contato-painel')
-        const cartao = $('.cc')
-        const gatilho = { trigger: grade, start: 'top 80%', once: true }
-
-        // o bloco inteiro abre da esquerda para a direita; o cartão vem logo atrás
-        gsap.from(painel, { clipPath: 'inset(0% 100% 0% 0%)', duration: 1.3, ease: 'power3.inOut', clearProps: 'clipPath', scrollTrigger: gatilho })
-        // só no desktop o cartão entra de lado: no celular um deslocamento horizontal, mesmo antes de rolar até
-        // ele, alarga a viewport do navegador (a página inteira "encolhe")
-        gsap.from(cartao, { autoAlpha: 0, x: desktop ? 50 : 0, y: desktop ? 0 : 40, duration: 1.1, delay: 0.25, clearProps: 'transform', scrollTrigger: gatilho })
-
-        revelarRotulos(painel)
-        revelarLinhas($('.contato-painel h2'), { gatilho: grade, atraso: 0.4 })
-        revelarBlocos(painel.querySelectorAll('.contato-painel-in > p, .contato-sol'), { gatilho: grade, atraso: 0.8, y: 18, stagger: 0.12 })
-        revelarBlocos(r.querySelectorAll('.cc-reveal'), { gatilho: cartao, inicio: 'top 82%', atraso: 0.5, y: 22, stagger: 0.08 })
+        gsap.from(painel, { clipPath: 'inset(0% 100% 0% 0%)', duration: 1.1, ease: 'power3.inOut', clearProps: 'clipPath' })
+        gsap.from($('.contato-painel .section-label i'), { scaleX: 0, transformOrigin: '0% 50%', duration: 0.9, delay: 0.3, ease: 'power3.inOut' })
+        revelarLinhas($('.contato-painel h2'), { semScroll: true, atraso: 0.45 })
+        gsap.from(painel.querySelectorAll('.contato-painel-in > p, .contato-sol'), { autoAlpha: 0, y: 18, duration: 0.8, delay: 0.8, stagger: 0.12, clearProps: 'transform' })
+        // só opacidade (não autoAlpha): visibility:hidden impediria o foco no primeiro campo
+        gsap.from(r.querySelectorAll('.cc-reveal'), { opacity: 0, y: 22, duration: 0.8, delay: 0.4, stagger: 0.08, clearProps: 'transform' })
       })
     },
-    { scope: raiz },
+    { scope: raiz, dependencies: [aberto], revertOnUpdate: true },
   )
 
   return (
-    <section ref={raiz} id="contato" className="contact" aria-labelledby="contato-titulo">
-      <div className="page-frame contato-grid">
+    <div ref={raiz} id="contato-janela" className="contato-janela" role="dialog" aria-modal="true" aria-labelledby="contato-titulo" hidden={!aberto} data-lenis-prevent>
+      <div className="contato-barra">
+        <button type="button" className="contato-fechar" onClick={aoFechar} aria-label="Fechar formulário">
+          <X size={22} aria-hidden="true" />
+        </button>
+      </div>
+      <div className="contato-grid">
         <aside className="contato-painel">
           <div className="contato-raios" aria-hidden="true" />
           <div className="contato-painel-in">
@@ -83,6 +117,6 @@ export default function Contato() {
         </aside>
         <FormularioContato onProgresso={setP} />
       </div>
-    </section>
+    </div>
   )
 }

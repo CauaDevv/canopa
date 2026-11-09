@@ -1,4 +1,4 @@
-import { lazy, Suspense, useRef } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import Flow from '../components/ui/Flow'
 import LinhasOnduladas from '../components/ui/LinhasOnduladas'
 import SimboloSol from '../components/ui/SimboloSol'
@@ -8,9 +8,11 @@ import { revelarLinhas } from '../lib/revelar'
 import { desenharSol } from '../lib/traco'
 import './Hero.css'
 
-// three.js só desce depois do primeiro quadro: o hero já precisa estar legível sem ele
+// three.js é a parte mais pesada da página (~130 KB gzip + compilar shaders): só desce depois da
+// carga, com o navegador ocioso, e nem desce para quem pediu movimento reduzido. O hero já está
+// legível sem ele; quando chega, o túnel aparece com um fade (o visual final é o mesmo).
 const HeroTunnel = lazy(() => import('../components/HeroTunnel').then((m) => ({ default: m.HeroTunnel })))
-const fotosTunel = ['solar-1.jpg', 'solar-2.jpg', 'solar-3.jpg'].map(
+const fotosTunel = ['solar-1.webp', 'solar-2.webp', 'solar-3.webp'].map(
   (nome) => `${import.meta.env.BASE_URL}images/solar/${nome}`,
 )
 
@@ -22,6 +24,27 @@ const fotosTunel = ['solar-1.jpg', 'solar-2.jpg', 'solar-3.jpg'].map(
 */
 export default function Hero() {
   const raiz = useRef(null)
+  const [tunel, setTunel] = useState(false)
+
+  useEffect(() => {
+    if (window.matchMedia(MIDIA.reduzido).matches) return
+    let espera
+    let ocioso
+    const iniciar = () => {
+      espera = window.setTimeout(() => {
+        const comecar = () => setTunel(true)
+        if (window.requestIdleCallback) ocioso = window.requestIdleCallback(comecar, { timeout: 3000 })
+        else comecar()
+      }, 1200)
+    }
+    if (document.readyState === 'complete') iniciar()
+    else window.addEventListener('load', iniciar, { once: true })
+    return () => {
+      window.removeEventListener('load', iniciar)
+      window.clearTimeout(espera)
+      if (ocioso && window.cancelIdleCallback) window.cancelIdleCallback(ocioso)
+    }
+  }, [])
 
   useGSAP(
     () => {
@@ -34,15 +57,19 @@ export default function Hero() {
         const sol = $('.hero-sun')
         desenharSol(sol, { atraso: 0.2 })
 
-        // as ondas de luz se riscam do centro para fora, depois de leve
-        gsap.from(r.querySelectorAll('.hero-lines path'), {
-          drawSVG: '0%',
-          duration: 2.4,
-          ease: 'power2.out',
-          stagger: { each: 0.03, from: 'center' },
-          delay: 0.3,
-          clearProps: 'strokeDasharray,strokeDashoffset',
-        })
+        // as ondas de luz se riscam do centro para fora (pathLength=1: ver LinhasOnduladas)
+        gsap.fromTo(
+          r.querySelectorAll('.hero-lines path'),
+          { strokeDasharray: 1, strokeDashoffset: 1 },
+          {
+            strokeDashoffset: 0,
+            duration: 2.4,
+            ease: 'power2.out',
+            stagger: { each: 0.03, from: 'center' },
+            delay: 0.3,
+            clearProps: 'strokeDasharray,strokeDashoffset',
+          },
+        )
 
         gsap
           .timeline()
@@ -110,13 +137,15 @@ export default function Hero() {
   return (
     <section ref={raiz} className="hero">
       <div className="hero-lines" aria-hidden="true">
-        <LinhasOnduladas side="left" />
-        <LinhasOnduladas side="right" />
+        <LinhasOnduladas side="left" risca />
+        <LinhasOnduladas side="right" risca />
       </div>
       <div className="hero-depth" aria-hidden="true">
-        <Suspense fallback={null}>
-          <HeroTunnel images={fotosTunel} />
-        </Suspense>
+        {tunel && (
+          <Suspense fallback={null}>
+            <HeroTunnel images={fotosTunel} />
+          </Suspense>
+        )}
       </div>
       <span className="hero-luz" aria-hidden="true" />
       <div className="page-frame hero-frame">

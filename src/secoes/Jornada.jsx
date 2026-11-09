@@ -1,4 +1,5 @@
 import { useRef } from 'react'
+import useQuandoPerto from '../hooks/useQuandoPerto'
 import { gsap, MIDIA, ScrollTrigger, useGSAP } from '../lib/animacao'
 import { revelarBlocos, revelarLinhas, revelarRotulos } from '../lib/revelar'
 import './Jornada.css'
@@ -17,9 +18,12 @@ const ETAPAS = [
 */
 export default function Jornada() {
   const raiz = useRef(null)
+  // a animação só é montada quando a seção chega perto da tela (ver useQuandoPerto)
+  const perto = useQuandoPerto(raiz)
 
   useGSAP(
     () => {
+      if (!perto) return
       const mm = gsap.matchMedia()
       mm.add(MIDIA.movimento, () => {
         const r = raiz.current
@@ -61,7 +65,7 @@ export default function Jornada() {
         return () => etapas.forEach((etapa) => etapa.classList.remove('is-apagado', 'is-aceso'))
       })
     },
-    { scope: raiz },
+    { scope: raiz, dependencies: [perto] },
   )
 
   return (

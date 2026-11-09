@@ -1,7 +1,7 @@
 import { useMemo, useRef, useState } from 'react'
 import { Building2, Eye, Handshake, Inbox, Mail, MessageSquare, Phone, RefreshCw, School, Search } from 'lucide-react'
 import { gsap, MIDIA, useGSAP } from '../lib/animacao'
-import { dataHora } from './formatos'
+import { dataHora } from '../lib/formatos'
 import PainelShell from './PainelShell'
 
 const normalizar = (s) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()

@@ -1,7 +1,14 @@
-/** As ondas de luz do hero e da tela de acesso: 38 curvas com gradiente da marca. */
-export default function LinhasOnduladas({ side }) {
+/*
+  As ondas de luz do hero e da tela de acesso: 38 curvas com gradiente da marca.
+  Com `risca` (só o hero) cada curva ganha `pathLength="1"`: o tracejado passa a ser
+  normalizado e o GSAP desenha as ondas animando só o `stroke-dashoffset`, sem o
+  `getTotalLength()` do DrawSVG medindo 76 caminhos (~300 ms de thread principal no celular).
+  Não se desenha por CSS: animar o tracejado de 76 caminhos com CSS não é composto e custou
+  mais (medido com o Lighthouse: 77 "animações não compostas").
+*/
+export default function LinhasOnduladas({ side, risca = false }) {
   return (
-    <svg className={'lines lines-' + side} viewBox="0 0 500 800" preserveAspectRatio="none" aria-hidden="true">
+    <svg className={'lines lines-' + side + (risca ? ' risca' : '')} viewBox="0 0 500 800" preserveAspectRatio="none" aria-hidden="true">
       <defs>
         <linearGradient id={'gradient-' + side} x1="0" y1="1" x2="1" y2="0">
           <stop stopColor="#00bac6" />
@@ -17,6 +24,7 @@ export default function LinhasOnduladas({ side }) {
           stroke={`url(#gradient-${side})`}
           strokeWidth="1.1"
           opacity=".72"
+          {...(risca ? { pathLength: 1 } : {})}
         />
       ))}
     </svg>

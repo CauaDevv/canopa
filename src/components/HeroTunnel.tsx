@@ -9,7 +9,6 @@ import {
   Group,
   LineBasicMaterial,
   LineSegments,
-  MathUtils,
   Mesh,
   MeshBasicMaterial,
   PerspectiveCamera,
@@ -19,7 +18,6 @@ import {
   TextureLoader,
   WebGLRenderer,
 } from 'three'
-import type { Texture } from 'three'
 const cn = (...classes: (string | undefined | false)[]) => classes.filter(Boolean).join(' ')
 
 
@@ -52,26 +50,6 @@ const COMPRIMENTO_TOTAL = TOTAL_SEGMENTOS * PROFUNDIDADE_SEGMENTO
 /* Chance de uma célula receber foto (o original sorteia por face) */
 const CHANCE_PISO_PAREDE = 0.16 // Math.random() > 0.8
 const CHANCE_TETO = 0.09 // Math.random() > 0.88
-
-/*
- * As fotos saíram do Unsplash e vieram para `public/images/tunel/`.
- *
- * Não é só higiene de organização: cada foto hotlinkada custava DNS + TLS +
- * conexão a um terceiro no meio do carregamento do hero, e o site ficava
- * dependendo da disponibilidade de um serviço que não é nosso.
- *
- * A qualidade é 45 de propósito. Aqui elas são textura de planos pequenos
- * voando dentro de névoa escura no WebGL — o olho não tem tempo de julgar
- * detalhe. Medido: 600w a q45 pesa 46 KB contra os 71 KB que o Unsplash
- * entregava a q80. Em foto de vitrine, que o leitor encara parada, a
- * qualidade é bem mais alta (ver `public/images/vitrine/`).
- */
-const FOTOS_PADRAO = Array.from(
-  { length: 9 },
-  (_, i) => `/images/tunel/moda-${String(i + 1).padStart(2, '0')}.avif`,
-)
-
-type PlanoFoto = Mesh<PlaneGeometry, MeshBasicMaterial>
 
 /** Arestas longitudinais do piso/teto + linhas intermediárias das paredes. */
 function criarGeometriaGrade() {
@@ -115,7 +93,7 @@ function criarGeometriaAnel() {
 export interface HeroTunnelProps {
   className?: string
   /** Fotos usadas como textura nas paredes. */
-  images?: string[]
+  images: string[]
   /** Cor do fundo e da névoa — o corredor some nela. */
   background?: string
   /** Cor das linhas da grade. */
@@ -128,7 +106,7 @@ export interface HeroTunnelProps {
 
 export function HeroTunnel({
   className,
-  images = FOTOS_PADRAO,
+  images,
   background = '#d8f3f2',
   gridColor = '#47b6b9',
   accentColor = '#eab451',
@@ -193,40 +171,31 @@ export function HeroTunnel({
       celulaAltura - MARGEM_CELULA * 2,
     )
 
-    /* Texturas ------------------------------------------------------------ */
+    /* Texturas e materiais ------------------------------------------------ */
+    // UM material por foto, compartilhado por todos os planos. Antes cada plano criava o seu e o
+    // three recalculava os parâmetros do shader a cada um (~230 ms de thread principal no
+    // celular, de novo a cada segmento reciclado). Sem fade por plano: eles nascem no fim do
+    // corredor, dentro da névoa, onde ainda são invisíveis, e o canvas inteiro já entra com fade.
     const carregador = new TextureLoader()
     carregador.setCrossOrigin('anonymous')
-    const prontas = new Set<Texture>()
     let desmontado = false
     let solicitarQuadro: () => void = () => undefined
-    const texturas = images.map(url =>
-      carregador.load(
-        url,
-        textura => {
-          if (desmontado) return
-          textura.colorSpace = SRGBColorSpace
-          prontas.add(textura)
-          solicitarQuadro()
-        },
-        undefined,
-        () => {
-          /* foto indisponível: os planos dela ficam invisíveis, sem quebrar a cena */
-        },
-      ),
+    // sem a foto o plano ficaria preto: o material nasce invisível e ganha o mapa quando ela chega
+    const materiais = images.map(() => new MeshBasicMaterial({ transparent: true, opacity: OPACIDADE_FOTO, depthWrite: false, side: DoubleSide, visible: false }))
+    const texturas = images.map((url, i) =>
+      carregador.load(url, textura => {
+        if (desmontado) return
+        textura.colorSpace = SRGBColorSpace
+        materiais[i].map = textura
+        materiais[i].visible = true
+        materiais[i].needsUpdate = true
+        solicitarQuadro()
+      }),
     )
 
     /* Segmentos ----------------------------------------------------------- */
-    const emFade = new Set<PlanoFoto>()
-
-    const criarPlano = (geometria: PlaneGeometry) => {
-      const textura = texturas[Math.floor(Math.random() * texturas.length)]
-      const plano = new Mesh(
-        geometria,
-        new MeshBasicMaterial({ map: textura, transparent: true, opacity: 0, depthWrite: false, side: DoubleSide }),
-      )
-      emFade.add(plano)
-      return plano
-    }
+    const criarPlano = (geometria: PlaneGeometry) =>
+      new Mesh(geometria, materiais[Math.floor(Math.random() * materiais.length)])
 
     const meiaLargura = LARGURA / 2
     const meiaAltura = ALTURA / 2
@@ -281,12 +250,7 @@ export function HeroTunnel({
     const limpar = (segmento: Group) => {
       for (let i = segmento.children.length - 1; i >= 0; i -= 1) {
         const filho = segmento.children[i]
-        if (filho instanceof Mesh) {
-          const plano = filho as PlanoFoto
-          emFade.delete(plano)
-          plano.material.dispose()
-          segmento.remove(plano)
-        }
+        if (filho instanceof Mesh) segmento.remove(filho)
       }
     }
 
@@ -330,27 +294,9 @@ export function HeroTunnel({
         }
       }
 
-      // Fade das fotos: só começa quando a textura chegou (substitui o GSAP do
-      // original). Textura ainda em rede não mantém um RAF ocioso aberto; o
-      // callback do loader acorda o render quando ela ficar pronta.
-      let fadePendente = false
-      for (const plano of emFade) {
-        const mapa = plano.material.map
-        const alvo = mapa && prontas.has(mapa) ? OPACIDADE_FOTO : 0
-        if (alvo === 0) continue
-
-        plano.material.opacity = MathUtils.lerp(plano.material.opacity, alvo, 0.05)
-        if (alvo - plano.material.opacity < 0.005) {
-          plano.material.opacity = alvo
-          emFade.delete(plano)
-        } else {
-          fadePendente = true
-        }
-      }
-
       renderer.render(cena, camera)
 
-      if (camera.position.z !== alvoZ || fadePendente) solicitarQuadro()
+      if (camera.position.z !== alvoZ) solicitarQuadro()
     }
 
     /**
@@ -409,6 +355,7 @@ export function HeroTunnel({
         cena.remove(segmento)
       }
       for (const textura of texturas) textura.dispose()
+      for (const material of materiais) material.dispose()
       geometriaGrade.dispose()
       geometriaAnel.dispose()
       geometriaHorizontal.dispose()

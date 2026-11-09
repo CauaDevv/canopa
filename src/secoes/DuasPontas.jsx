@@ -1,4 +1,5 @@
 import { useRef } from 'react'
+import useQuandoPerto from '../hooks/useQuandoPerto'
 import { gsap, MIDIA, useGSAP } from '../lib/animacao'
 import { ligarSpotlight } from '../lib/interacao'
 import { parallaxFoto, revelarBlocos, revelarRotulos } from '../lib/revelar'
@@ -9,8 +10,9 @@ const CARTOES = [
     rotulo: '01 / PARA EMPRESAS',
     titulo: ['APOIE PROJETOS', 'COM PROPÓSITO.'],
     texto: 'Conheça iniciativas que buscam apoio e acompanhe suas etapas e informações de impacto.',
-    foto: 'paineis-campo.webp',
+    foto: 'paineis-campo',
     largura: 1200,
+    maior: 1200,
     altura: 798,
     alt: 'Painéis solares',
   },
@@ -18,8 +20,9 @@ const CARTOES = [
     rotulo: '02 / PARA INSTITUIÇÕES',
     titulo: ['MAIS ESPAÇO PARA', 'FAZER A DIFERENÇA.'],
     texto: 'Escolas e ONGs podem apresentar suas necessidades e buscar parceiros para projetos de energia solar.',
-    foto: 'paineis-aerea.webp',
+    foto: 'paineis-aerea',
     largura: 1000,
+    maior: 1000,
     altura: 749,
     alt: 'Paisagem com painéis solares',
   },
@@ -32,9 +35,12 @@ const CARTOES = [
 */
 export default function DuasPontas() {
   const raiz = useRef(null)
+  // a animação só é montada quando a seção chega perto da tela (ver useQuandoPerto)
+  const perto = useQuandoPerto(raiz)
 
   useGSAP(
     () => {
+      if (!perto) return
       const mm = gsap.matchMedia()
 
       mm.add({ movimento: MIDIA.movimento, desktop: MIDIA.desktop }, (ctx) => {
@@ -81,7 +87,7 @@ export default function DuasPontas() {
         ligarSpotlight(raiz.current.querySelectorAll('.showcase-card')),
       )
     },
-    { scope: raiz },
+    { scope: raiz, dependencies: [perto] },
   )
 
   return (
@@ -101,7 +107,9 @@ export default function DuasPontas() {
                 <img
                   loading="lazy"
                   decoding="async"
-                  src={`${import.meta.env.BASE_URL}images/fotos/${c.foto}`}
+                  src={`${import.meta.env.BASE_URL}images/fotos/${c.foto}.webp`}
+                  srcSet={`${import.meta.env.BASE_URL}images/fotos/${c.foto}-480.webp 480w, ${import.meta.env.BASE_URL}images/fotos/${c.foto}-800.webp 800w, ${import.meta.env.BASE_URL}images/fotos/${c.foto}.webp ${c.maior}w`}
+                  sizes="(max-width: 700px) 92vw, 44vw"
                   width={c.largura}
                   height={c.altura}
                   alt={c.alt}

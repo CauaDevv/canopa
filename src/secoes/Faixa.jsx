@@ -1,5 +1,6 @@
 import { useRef } from 'react'
 import SimboloSol from '../components/ui/SimboloSol'
+import useQuandoPerto from '../hooks/useQuandoPerto'
 import { gsap, MIDIA, ScrollTrigger, useGSAP } from '../lib/animacao'
 import { rolagem } from '../lib/rolagem'
 import './Faixa.css'
@@ -38,9 +39,12 @@ function Trilho() {
 */
 export default function Faixa() {
   const raiz = useRef(null)
+  // a animação só é montada quando a seção chega perto da tela (ver useQuandoPerto)
+  const perto = useQuandoPerto(raiz)
 
   useGSAP(
     () => {
+      if (!perto) return
       const mm = gsap.matchMedia()
       mm.add(MIDIA.movimento, () => {
         const r = raiz.current
@@ -102,7 +106,7 @@ export default function Faixa() {
         }
       })
     },
-    { scope: raiz },
+    { scope: raiz, dependencies: [perto] },
   )
 
   return (

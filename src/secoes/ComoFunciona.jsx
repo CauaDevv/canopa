@@ -1,5 +1,6 @@
 import { useRef } from 'react'
 import { HandHeart, Leaf, Sun } from 'lucide-react'
+import useQuandoPerto from '../hooks/useQuandoPerto'
 import { gsap, MIDIA, useGSAP } from '../lib/animacao'
 import { ligarSpotlight } from '../lib/interacao'
 import { desenharIcone, revelarBlocos, revelarLinhas, revelarRotulos } from '../lib/revelar'
@@ -13,9 +14,12 @@ const PASSOS = [
 
 export default function ComoFunciona() {
   const raiz = useRef(null)
+  // a animação só é montada quando a seção chega perto da tela (ver useQuandoPerto)
+  const perto = useQuandoPerto(raiz)
 
   useGSAP(
     () => {
+      if (!perto) return
       const mm = gsap.matchMedia()
 
       mm.add({ movimento: MIDIA.movimento, desktop: MIDIA.desktop }, (ctx) => {
@@ -59,7 +63,7 @@ export default function ComoFunciona() {
         ligarSpotlight(raiz.current.querySelectorAll('.step')),
       )
     },
-    { scope: raiz },
+    { scope: raiz, dependencies: [perto] },
   )
 
   return (

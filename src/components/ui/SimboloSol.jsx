@@ -1,7 +1,7 @@
 /*
   O símbolo do CANOPA — um sol nascendo sobre o horizonte — em vetor.
 
-  Por que existe se já há `canopa-simbolo.png`: `pathLength`/traço só funcionam
+  Por que existe (o símbolo era um PNG, já removido): `pathLength`/traço só funcionam
   em <path> de SVG inline; foto não se anima por traço. As formas foram
   reconstruídas com a geometria medida no PNG (viewBox 1068×394, centro dos
   arcos em 534 × 457,5; anel externo de raio 301–354; anel interno 184,5–236,5)

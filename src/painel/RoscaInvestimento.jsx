@@ -1,7 +1,7 @@
 import { useMemo, useRef, useState } from 'react'
 import { Leaf } from 'lucide-react'
 import { gsap, MIDIA, useGSAP } from '../lib/animacao'
-import { decimal, moeda, percentual } from './formatos'
+import { decimal, moeda, percentual } from '../lib/formatos'
 
 // geometria (viewBox 220): anel de 26 de espessura; vão de 3 unidades entre fatias
 const C = 110

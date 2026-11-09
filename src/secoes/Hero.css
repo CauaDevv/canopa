@@ -45,7 +45,7 @@
 .hero-content { position: relative; z-index: 2; padding: 20px; }
 .hero-kicker { display: inline-block; font-size: 10px; letter-spacing: .2em; font-weight: 700; color: #529298; }
 .hero h1 {
-  font-family: CanopaHeadline, 'Barlow Condensed', sans-serif;
+  font-family: 'Barlow Condensed', sans-serif;
   font-weight: 500;
   font-size: clamp(47px, 5vw, 72px);
   letter-spacing: .19em;

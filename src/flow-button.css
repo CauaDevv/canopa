@@ -1,4 +1,4 @@
-/* FlowButton supplied by the user, adapted to the existing brand and semantics. */
+/* FlowButton fornecido pelo usuário, adaptado à marca e à semântica (link continua link, submit continua submit). */
 .flow-button {
   --flow-fill: var(--navy);
   --flow-ink: var(--white);
@@ -29,28 +29,14 @@
 .flow-button:focus-visible .flow-button__arrow--in { left: 20px; }
 .flow-button:focus-visible .flow-button__arrow--out { right: -25%; }
 @media (hover: hover) and (pointer: fine) {
-  .flow-button:not(:disabled):hover, .catalog-story__face:hover .flow-button { color: var(--flow-ink); border-radius: 12px; transform: none; }
-  .flow-button:not(:disabled):hover .flow-button__text, .catalog-story__face:hover .flow-button__text { transform: translateX(10px); }
-  .flow-button:not(:disabled):hover .flow-button__circle, .catalog-story__face:hover .flow-button__circle { opacity: 1; transform: translate(-50%, -50%) scale(2.2); }
-  .flow-button:not(:disabled):hover .flow-button__arrow--in, .catalog-story__face:hover .flow-button__arrow--in { left: 20px; }
-  .flow-button:not(:disabled):hover .flow-button__arrow--out, .catalog-story__face:hover .flow-button__arrow--out { right: -25%; }
+  .flow-button:not(:disabled):hover { color: var(--flow-ink); border-radius: 12px; transform: none; }
+  .flow-button:not(:disabled):hover .flow-button__text { transform: translateX(10px); }
+  .flow-button:not(:disabled):hover .flow-button__circle { opacity: 1; transform: translate(-50%, -50%) scale(2.2); }
+  .flow-button:not(:disabled):hover .flow-button__arrow--in { left: 20px; }
+  .flow-button:not(:disabled):hover .flow-button__arrow--out { right: -25%; }
 }
 .flow-button:not(:disabled):active { transform: scale(.95); }
 .flow-button:disabled { opacity: .65; cursor: wait; }
-.cta--dark.flow-button, .nav-cta.flow-button, .contact-form__submit.flow-button { --flow-fill: var(--orange); --flow-ink: var(--navy); }
-.is-scrolled .nav-cta.flow-button, .pricing-card .flow-button { --flow-fill: var(--navy); --flow-ink: var(--white); }
-.hero__actions .flow-button { padding: 14px 44px; }
-.pricing-card .flow-button, .catalog-dialog__done.flow-button, .contact-form__submit.flow-button, .nav-mobile__cta.flow-button { padding: 14px 48px; border-radius: 100px; justify-content: center; gap: 0; }
-.nav-cta.flow-button { padding-inline: 40px; }
-@media (max-width: 767px) { .nav-cta.flow-button { padding-inline: 32px; } }
-@media (max-width: 639px) { .nav-cta.flow-button { display: none; } }
-.contact-form__submit.flow-button svg { transform: none; }
-.catalog-story__action.flow-button { position: relative; inset: auto; display: flex; padding: 12px 32px; font-size: 12px; }
-@media (max-width: 768px) { .catalog-story__action.flow-button { font-size: 14px; } }
-.catalog-story__action .flow-button__arrow--out { right: 12px; }
-.catalog-story__action .flow-button__arrow, .catalog-story__action .flow-button__arrow .icon { width: 14px; height: 14px; }
-.catalog-story__face:focus-visible .flow-button { color: var(--flow-ink); }
-.catalog-story__face:focus-visible .flow-button__circle { opacity: 1; transform: translate(-50%, -50%) scale(2.2); }
 @media (prefers-reduced-motion: reduce) {
   .flow-button, .flow-button__text, .flow-button__circle, .flow-button__arrow { transition: none; }
   .flow-button:not(:disabled):active { transform: none; }

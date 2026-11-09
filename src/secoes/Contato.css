@@ -1,11 +1,38 @@
-.contact { padding: 100px 0 110px; background: #f7fcfb; }
+/*
+  Janela do formulário: fixa, por cima da página, só visível quando aberta. Rola por conta
+  própria (a rolagem da página fica parada: App.jsx marca o <html> com `intro-ativo`).
+*/
+.contato-janela {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 0 clamp(12px, 3vw, 40px) clamp(12px, 3vw, 40px);
+  background: rgba(3, 30, 36, .8);
+  backdrop-filter: blur(10px);
+  animation: contato-fundo .35s ease;
+}
+.contato-janela[hidden] { display: none; }
+@keyframes contato-fundo { from { opacity: 0; } }
+
+/* a barra com o botão de fechar acompanha a rolagem da janela (em celular o formulário é mais alto que a tela) */
+.contato-barra { position: sticky; top: 0; z-index: 3; display: flex; flex: none; justify-content: flex-end; width: min(1180px, 100%); margin: 0 auto; padding: 10px 0; }
+.contato-fechar { display: grid; place-items: center; width: 48px; height: 48px; border: 1px solid rgba(255, 255, 255, .24); border-radius: 50%; background: rgba(5, 47, 56, .78); color: #fff; cursor: pointer; transition: background-color .25s, rotate .4s var(--ease-sol); }
+.contato-fechar:hover { background: rgba(255, 255, 255, .18); rotate: 90deg; }
 
 /* Painel escuro + cartão claro, emendados num bloco só. Cantos retos, como o resto da marca. */
 .contato-grid {
   display: grid;
   grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr);
-  box-shadow: 0 50px 90px -50px rgba(7, 83, 92, .5);
+  width: min(1180px, 100%);
+  margin: auto;
+  box-shadow: 0 50px 100px -40px rgba(0, 0, 0, .65);
+  animation: contato-entra .55s var(--ease-sol);
 }
+@keyframes contato-entra { from { opacity: 0; translate: 0 36px; scale: .97; } }
 
 .contato-painel { position: relative; overflow: hidden; isolation: isolate; color: #e5f4ee; background: linear-gradient(165deg, #07535c 0%, #073e48 58%, #052f38 100%); }
 /* raios do sol, como no rodapé: balançam devagar em torno do ponto de origem, acima do topo */
@@ -47,11 +74,10 @@
   .contato-sol svg { max-width: 260px; }
 }
 @media (max-width: 700px) {
-  .contact { padding: 64px 0 72px; }
   .contato-painel h2 { font-size: 40px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .contato-raios { animation: none; }
+  .contato-janela, .contato-grid, .contato-raios { animation: none; }
   .contato-sol path, .contato-sol svg { transition: none; }
 }

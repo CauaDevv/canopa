@@ -2,7 +2,7 @@ import { useMemo, useRef, useState } from 'react'
 import { CheckCircle2, Hammer, Users } from 'lucide-react'
 import { gsap, MIDIA, useGSAP } from '../lib/animacao'
 import { STATUS } from './dados-demo'
-import { moeda } from './formatos'
+import { moeda } from '../lib/formatos'
 
 // status sempre com ícone + texto (nunca só a cor)
 export function StatusPill({ status }) {

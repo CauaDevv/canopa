@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { ChevronsLeft, ChevronsRight, Globe, LogOut, Menu, X } from 'lucide-react'
 import SimboloSol from '../components/ui/SimboloSol'
 import { useMediaQuery } from '../components/use-media-query'
-import { iniciais } from './formatos'
+import { iniciais } from '../lib/formatos'
 import './painel.css'
 
 const CHAVE_RECOLHIDO = 'canopa_painel_lateral'

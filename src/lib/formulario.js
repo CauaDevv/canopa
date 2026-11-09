@@ -1,14 +1,14 @@
 /*
-  O botão final da página (CampoMagnetico) leva até o formulário. A rolagem é do
-  Lenis (SmoothScroll trata todo link "#…"); aqui só se avisa o formulário, depois
-  que a rolagem chega, para ele acender e levar o foco ao primeiro campo pendente.
+  O formulário de contato vive numa janela que só abre quando alguém clica no botão
+  final da página (CampoMagnetico) ou em qualquer link para "#contato"/"#formulario"
+  (ver App.jsx). Quando a janela abre, este aviso faz o formulário acender e levar o foco
+  ao primeiro campo pendente.
 */
 export const EVENTO_FORMULARIO = 'canopa:abrir-formulario'
 
-// 1,1 s é a duração das âncoras no SmoothScroll; com movimento reduzido a rolagem é instantânea
-const ESPERA_ROLAGEM_MS = 1250
-
-export function chamarFormulario() {
+// espera a janela terminar de aparecer antes de mover o foco (com movimento reduzido não há o que esperar)
+export function chamarFormulario(espera = 450) {
   const reduzido = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  window.setTimeout(() => window.dispatchEvent(new CustomEvent(EVENTO_FORMULARIO)), reduzido ? 80 : ESPERA_ROLAGEM_MS)
+  const id = window.setTimeout(() => window.dispatchEvent(new CustomEvent(EVENTO_FORMULARIO)), reduzido ? 80 : espera)
+  return () => window.clearTimeout(id)
 }
