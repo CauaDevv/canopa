@@ -1,0 +1,98 @@
+/*
+  CTA Campo Magnético — © 2026 Upward Creative Academy (ver nota de licença em CampoMagnetico.jsx).
+  Adaptado ao CANOPA: verde-petróleo de fundo, traços que esquentam para turquesa e dourado,
+  tipografia da marca (Barlow Condensed em caixa alta nos títulos, DM Sans nos rótulos).
+*/
+.campo {
+  --campo-bg: #052f38; --campo-text: #f2fbfa; --campo-soft: #b9d9d6; --campo-muted: #86adab;
+  /* os três tons dos traços precisam estar em #hex: o canvas lê estas variáveis */
+  --campo-far: #24616d; --campo-hot1: #04b7c7; --campo-hot2: #f9ca78;
+  --campo-btn: #f5fbfa; --campo-btn-text: #07535c;
+  --campo-font: 'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --campo-display: CanopaHeadline, 'Barlow Condensed', sans-serif;
+  --campo-mono: ui-monospace, 'SF Mono', SFMono-Regular, Menlo, Consolas, monospace;
+  position: relative; isolation: isolate; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  width: 100%; min-height: 680px; min-height: clamp(640px, 100vh, 900px); min-height: clamp(640px, 100svh, 900px); margin: 0;
+  padding: clamp(64px, 9vh, 104px) clamp(18px, 5vw, 56px) clamp(80px, 11vh, 120px);
+  /* sem JavaScript fica só a grade de pontos; com ele, o canvas desenha o campo */
+  background: radial-gradient(circle, rgba(255, 255, 255, .09) 1px, transparent 1.6px) 0 0 / 26px 26px, var(--campo-bg);
+  color: var(--campo-text); font: 400 16px/1.5 var(--campo-font); text-align: center; -webkit-tap-highlight-color: transparent;
+}
+.campo *, .campo *::before, .campo *::after { box-sizing: border-box; }
+.campo.campo-js { background: var(--campo-bg); }
+.campo-cv { position: absolute; left: 0; top: 0; z-index: -1; display: block; width: 100%; height: 100%; pointer-events: none; }
+.campo::after { content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none; background: radial-gradient(120% 90% at 50% 50%, transparent 55%, rgba(1, 18, 23, .7)); }
+.campo-in { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 900px; }
+
+.campo .campo-eye {
+  display: inline-flex; align-items: center; gap: 10px; margin: 0 0 18px; padding: 8px 15px 8px 13px;
+  border: 1px solid rgba(255, 255, 255, .14); border-radius: 99px; background: rgba(5, 47, 56, .72);
+  color: var(--campo-soft); font: 700 11px/1.2 var(--campo-font); letter-spacing: .2em; text-transform: uppercase;
+}
+.campo-eye::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: linear-gradient(135deg, var(--campo-hot1), var(--campo-hot2)); box-shadow: 0 0 12px var(--campo-hot2); }
+.campo .campo-title {
+  max-width: 14em; margin: 0; padding: 0; color: var(--campo-text);
+  font: 500 clamp(40px, 5.6vw, 80px) / 1.04 var(--campo-display); letter-spacing: .06em; text-transform: uppercase; text-wrap: balance;
+  text-shadow: 0 4px 30px var(--campo-bg);
+}
+.campo .campo-title em { font-style: normal; text-shadow: none; background: linear-gradient(90deg, var(--campo-hot1), var(--campo-hot2)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+
+/* botão gigante */
+.campo-stage { position: relative; display: grid; place-items: center; width: clamp(220px, 26vw, 300px); aspect-ratio: 1; margin: clamp(26px, 5vh, 48px) 0 0; }
+.campo-ring { position: absolute; inset: -30px; border-radius: 50%; pointer-events: none; }
+.campo-ring b { position: absolute; left: 50%; top: 0; width: 12px; height: 50%; margin-left: -6px; transform-origin: 50% 100%; color: var(--campo-soft); font: 600 11px/1 var(--campo-mono); text-align: center; text-transform: uppercase; }
+.campo .campo-cta, .campo .campo-cta:hover, .campo .campo-cta:focus, .campo .campo-cta:visited {
+  position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; width: 100%; height: 100%; margin: 0; padding: 0;
+  border: 0; border-radius: 50%; background: var(--campo-btn); color: var(--campo-btn-text);
+  font: 600 clamp(26px, 2.8vw, 36px) / 1 var(--campo-display); letter-spacing: .08em; text-decoration: none; text-transform: uppercase; outline: none; isolation: isolate; overflow: hidden;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, .3), 0 30px 80px -20px color-mix(in srgb, var(--campo-hot2) 50%, transparent), 0 0 120px -30px var(--campo-hot1);
+  transform: translate3d(var(--campo-bx, 0px), var(--campo-by, 0px), 0) scale(var(--campo-bs, 1)); transition: transform .7s cubic-bezier(.2, .9, .25, 1.15), box-shadow .5s ease;
+}
+.campo-cta::before { content: ''; position: absolute; inset: 0; z-index: -1; border-radius: inherit; background: conic-gradient(from var(--campo-ca, 0deg), var(--campo-hot1), var(--campo-hot2), #8dc9ad, var(--campo-hot1)); opacity: 0; transition: opacity .5s ease; }
+.campo-lbl { display: flex; flex-direction: column; align-items: center; transform: translate3d(var(--campo-lx, 0px), var(--campo-ly, 0px), 0); transition: transform .7s cubic-bezier(.2, .9, .25, 1.15); }
+.campo-l1, .campo-l2 { display: block; }
+.campo-l2 { margin-top: 4px; }
+.campo-arr { display: grid; place-items: center; width: 44px; height: 44px; margin-top: 12px; border-radius: 50%; background: var(--campo-btn-text); color: var(--campo-btn); transition: transform .6s cubic-bezier(.2, .9, .25, 1.2), background-color .4s; }
+.campo-arr svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+/* no hover o botão ganha o degradê do sol; o texto continua azul-petróleo (legível sobre turquesa e dourado) */
+.campo .campo-cta:hover, .campo .campo-cta:focus-visible { --campo-bs: 1.06; box-shadow: 0 0 0 1px rgba(255, 255, 255, .5), 0 40px 100px -20px var(--campo-hot2), 0 0 160px -20px var(--campo-hot1); }
+.campo-cta:hover::before, .campo-cta:focus-visible::before { opacity: 1; }
+.campo-cta:hover .campo-arr, .campo-cta:focus-visible .campo-arr { transform: rotate(-45deg) scale(1.08); background: #fff; color: var(--campo-btn-text); }
+.campo .campo-cta:focus-visible { outline: 2px solid var(--campo-text); outline-offset: 10px; }
+.campo .campo-cta:active { --campo-bs: .96; transition-duration: .15s; }
+
+.campo .campo-trust { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 22px; margin: clamp(44px, 6vh, 60px) 0 0; padding: 0; list-style: none; }
+.campo .campo-trust li { display: inline-flex; align-items: center; gap: 8px; margin: 0; padding: 0; color: var(--campo-soft); font: 500 14px/1.4 var(--campo-font); list-style: none; text-shadow: 0 0 3px var(--campo-bg), 0 0 10px var(--campo-bg), 0 0 18px var(--campo-bg); }
+.campo-trust li::before { content: ''; width: 12px; height: 2px; border-radius: 2px; background: linear-gradient(90deg, var(--campo-hot1), var(--campo-hot2)); }
+
+.campo .campo-pause, .campo .campo-pause:hover, .campo .campo-pause:focus {
+  -webkit-appearance: none; appearance: none; position: absolute; right: clamp(12px, 2vw, 24px); bottom: clamp(12px, 2vw, 24px); z-index: 2; display: inline-flex; align-items: center; gap: 8px;
+  min-width: 44px; min-height: 44px; margin: 0; padding: 0 15px; border: 1px solid rgba(255, 255, 255, .18); border-radius: 99px; background: rgba(5, 47, 56, .65); box-shadow: none;
+  color: var(--campo-muted); font: 700 10.5px/1 var(--campo-font); letter-spacing: .14em; text-transform: uppercase; cursor: pointer; outline: none; transition: color .3s, border-color .3s;
+}
+.campo .campo-pause:hover { color: var(--campo-text); border-color: rgba(255, 255, 255, .42); }
+.campo .campo-pause:focus-visible { outline: 2px solid var(--campo-text); outline-offset: 3px; }
+.campo-pause svg { width: 11px; height: 11px; fill: currentColor; }
+.campo-pause[aria-pressed="true"] > .campo-ipa, .campo-pause[aria-pressed="false"] > .campo-ipl { display: none; }
+.campo:not(.campo-js) .campo-pause, .campo:not(.campo-js) .campo-ring { display: none; }
+
+@media (max-width: 560px) {
+  .campo .campo-trust { flex-direction: column; align-items: center; gap: 6px; }
+  .campo-ring { inset: -24px; }
+}
+
+/* entrada (só com o script) e animações contínuas (só com a dobra na tela) */
+.campo-js .campo-r { opacity: 0; transform: translateY(22px); }
+.campo-go .campo-r { opacity: 1; transform: none; transition: opacity .9s ease, transform 1.1s cubic-bezier(.16, 1, .3, 1); transition-delay: calc(var(--campo-d, 0) * 110ms + 150ms); }
+.campo-js .campo-stage { opacity: 0; transform: scale(.6); }
+.campo-go .campo-stage { opacity: 1; transform: none; transition: opacity .8s ease .35s, transform 1.4s cubic-bezier(.16, 1.3, .3, 1) .35s; }
+.campo-live .campo-ring { animation: campo-giro 22s linear infinite; }
+@keyframes campo-giro { to { transform: rotate(360deg); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .campo *, .campo *::before, .campo *::after { animation: none !important; }
+  .campo-js .campo-r, .campo-js .campo-stage { transform: none !important; }
+  .campo-go .campo-r, .campo-go .campo-stage { transition: opacity .5s ease !important; }
+  .campo .campo-cta, .campo-lbl { transform: none !important; }
+  .campo .campo-pause { display: none; }
+}

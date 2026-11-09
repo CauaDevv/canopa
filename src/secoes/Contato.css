@@ -1,68 +1,57 @@
-.contact { background: #f7fcfb; }
-.contact-title { padding: 65px 6% 15px; }
-.contact-title h2 { margin-bottom: 0; }
+.contact { padding: 100px 0 110px; background: #f7fcfb; }
 
-.contact-band {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 60px;
-  min-height: 225px;
-  padding: 35px 5%;
-  overflow: hidden;
-  background: #08b7c6;
-  color: #fff;
-}
-.contact-band span { font-size: 10px; letter-spacing: .18em; }
-.contact-band h3 { font-size: 30px; letter-spacing: .08em; margin: 12px 0; }
-.contact-band p { font-size: 14px; }
-.contact-band > a {
-  /* área de toque maior sem mexer no texto: o respiro de cima é compensado pela margem negativa */
-  padding: 14px 0 8px;
-  margin-top: -14px;
-  border-bottom: 1px solid white;
-  font-size: 11px;
-  letter-spacing: .1em;
-  font-weight: 700;
-  transition: letter-spacing .35s var(--ease-sol), opacity .25s;
-}
-.contact-band > a:hover { letter-spacing: .16em; }
-.contact-band .brand-mark { flex-shrink: 0; width: 180px; height: auto; color: #fff; opacity: .2; }
-
-/* varredura de luz que atravessa a faixa quando ela abre (só com movimento permitido) */
-.contact-brilho { display: none; }
-@media (prefers-reduced-motion: no-preference) {
-  .contact-band span.contact-brilho {
-    display: block;
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background: linear-gradient(100deg, transparent 32%, rgba(255, 255, 255, .24) 50%, transparent 68%);
-  }
+/* Painel escuro + cartão claro, emendados num bloco só. Cantos retos, como o resto da marca. */
+.contato-grid {
+  display: grid;
+  grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr);
+  box-shadow: 0 50px 90px -50px rgba(7, 83, 92, .5);
 }
 
-.form-area { padding: 55px 6% 85px; }
-.form-area h2 { margin: 0; }
-.form-area > div > p { font-size: 14px; color: #799498; }
-.form-area form { margin-top: 35px; }
-.form-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; }
+.contato-painel { position: relative; overflow: hidden; isolation: isolate; color: #e5f4ee; background: linear-gradient(165deg, #07535c 0%, #073e48 58%, #052f38 100%); }
+/* raios do sol, como no rodapé: balançam devagar em torno do ponto de origem, acima do topo */
+.contato-raios {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  transform-origin: 50% -35%;
+  background:
+    radial-gradient(ellipse at 50% -30%, #f2bd6f66, transparent 55%),
+    repeating-conic-gradient(from 245deg at 50% -35%, transparent 0deg, #e7c47b14 4deg, transparent 8deg);
+  mask-image: linear-gradient(black, transparent 85%);
+  animation: contato-balanco 14s ease-in-out infinite alternate;
+}
+@keyframes contato-balanco { from { rotate: -2.5deg; } to { rotate: 2.5deg; } }
 
-input:user-invalid, textarea:user-invalid { border-color: #c25b5b; box-shadow: 0 0 0 4px rgba(194, 91, 91, .12); }
+.contato-painel-in { display: flex; flex-direction: column; height: 100%; padding: clamp(32px, 4vw, 56px); }
+.contato-painel .section-label { color: #f2c77f; }
+.contato-painel h2 { margin: 18px 0; font-size: clamp(38px, 3.6vw, 54px); color: #fff; }
+.contato-painel h2 .acento { color: #f9ca78; }
+.contato-painel-in > p { max-width: 36ch; margin: 0; font-size: 15px; line-height: 1.75; color: #c3ddda; }
 
-.submit { float: right; }
-.form-message { clear: both; padding-top: 15px; color: #5a7c7e; font-size: 13px; animation: aparecer .5s var(--ease-sol); }
-@keyframes aparecer { from { opacity: 0; translate: 0 8px; } }
+/* o sol de progresso: cada grupo de formas acende quando a etapa correspondente é concluída */
+.contato-sol { margin-top: auto; padding-top: 40px; }
+.contato-sol svg { display: block; width: 100%; max-width: 380px; height: auto; color: #ffc875; transition: filter .8s ease; }
+.contato-sol path { opacity: .14; transition: opacity .8s ease; }
+.contato-sol[data-g0="1"] path[data-grupo="0"],
+.contato-sol[data-g1="1"] path[data-grupo="1"],
+.contato-sol[data-g2="1"] path[data-grupo="2"],
+.contato-sol[data-g3="1"] path[data-grupo="3"] { opacity: 1; }
+.contato-sol[data-completo="1"] svg { filter: drop-shadow(0 0 22px rgba(249, 202, 120, .7)); }
+.contato-painel .contato-status { min-height: 2.8em; margin: 18px 0 0; font: 700 11px/1.7 'DM Sans', sans-serif; letter-spacing: .14em; text-transform: uppercase; color: #f2c77f; }
 
+@media (max-width: 900px) {
+  .contato-grid { grid-template-columns: 1fr; }
+  .contato-painel-in { padding: 36px 6% 32px; }
+  .contato-sol { padding-top: 28px; }
+  .contato-sol svg { max-width: 260px; }
+}
 @media (max-width: 700px) {
-  .contact-title { padding: 55px 6% 15px; }
-  .contact-band { align-items: flex-start; flex-direction: column; gap: 15px; }
-  .contact-band .brand-mark { position: absolute; right: -30px; bottom: 10px; }
-  .contact-band h3 { font-size: 25px; }
-  .form-area { padding: 45px 6% 75px; }
-  .form-row { grid-template-columns: 1fr; gap: 0; }
+  .contact { padding: 64px 0 72px; }
+  .contato-painel h2 { font-size: 40px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .form-message { animation: none; }
+  .contato-raios { animation: none; }
+  .contato-sol path, .contato-sol svg { transition: none; }
 }

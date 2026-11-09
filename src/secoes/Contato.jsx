@@ -1,79 +1,87 @@
-import { useRef } from 'react'
-import { ContactForm } from '../components/Accounts'
+import { useRef, useState } from 'react'
+import FormularioContato from '../components/FormularioContato'
 import SimboloSol from '../components/ui/SimboloSol'
 import { gsap, MIDIA, useGSAP } from '../lib/animacao'
 import { revelarBlocos, revelarLinhas, revelarRotulos } from '../lib/revelar'
-import { desenharSol } from '../lib/traco'
 import './Contato.css'
 
+const FALTAM = {
+  perfil: 'seu perfil',
+  nome: 'seu nome',
+  contato: 'e-mail e telefone',
+  mensagem: 'a mensagem',
+}
+
+function textoDoStatus(p) {
+  if (p.enviado) return 'Mensagem enviada. O sol nasceu!'
+  if (p.total === 4) return 'Tudo pronto. É só enviar!'
+  if (p.total === 0) return 'Escolha seu perfil para o sol começar a nascer.'
+  const faltam = Object.keys(FALTAM).filter((k) => !p[k]).map((k) => FALTAM[k])
+  return `Falta: ${faltam.join(', ')}.`
+}
+
 /*
-  O fechamento: a faixa de convite abre da esquerda para a direita com uma
-  varredura de luz, o símbolo se desenha dentro dela, e os campos do formulário
-  entram em sequência. Nada se mexe no formulário enquanto a pessoa digita.
+  Fechamento da página. O formulário e o painel conversam: cada etapa concluída
+  acende uma parte do símbolo do sol (perfil = horizonte, nome = disco, contato =
+  raios, mensagem = haste). O painel é só reação ao estado — quem manda é o formulário.
 */
 export default function Contato() {
   const raiz = useRef(null)
+  const [p, setP] = useState({ perfil: false, nome: false, contato: false, mensagem: false, total: 0 })
 
   useGSAP(
     () => {
       const mm = gsap.matchMedia()
-      mm.add(MIDIA.movimento, () => {
+      mm.add({ movimento: MIDIA.movimento, desktop: MIDIA.desktop }, (ctx) => {
+        if (!ctx.conditions.movimento) return
+        const { desktop } = ctx.conditions
         const r = raiz.current
         const $ = (sel) => r.querySelector(sel)
-        const faixa = $('.contact-band')
-        const form = $('.form-area')
+        const grade = $('.contato-grid')
+        const painel = $('.contato-painel')
+        const cartao = $('.cc')
+        const gatilho = { trigger: grade, start: 'top 80%', once: true }
 
-        revelarRotulos(r)
-        revelarLinhas($('.contact-title h2'), { gatilho: $('.contact-title') })
+        // o bloco inteiro abre da esquerda para a direita; o cartão vem logo atrás
+        gsap.from(painel, { clipPath: 'inset(0% 100% 0% 0%)', duration: 1.3, ease: 'power3.inOut', clearProps: 'clipPath', scrollTrigger: gatilho })
+        // só no desktop o cartão entra de lado: no celular um deslocamento horizontal, mesmo antes de rolar até
+        // ele, alarga a viewport do navegador (a página inteira "encolhe")
+        gsap.from(cartao, { autoAlpha: 0, x: desktop ? 50 : 0, y: desktop ? 0 : 40, duration: 1.1, delay: 0.25, clearProps: 'transform', scrollTrigger: gatilho })
 
-        gsap
-          .timeline({ scrollTrigger: { trigger: faixa, start: 'top 82%', once: true } })
-          .from(faixa, { clipPath: 'inset(0% 100% 0% 0%)', duration: 1.3, ease: 'power3.inOut', clearProps: 'clipPath' }, 0)
-          .from(faixa.querySelectorAll('div > *, a'), { autoAlpha: 0, y: 18, duration: 0.8, stagger: 0.1 }, 0.7)
-          .fromTo($('.contact-brilho'), { xPercent: -120 }, { xPercent: 120, duration: 1.6, ease: 'power2.inOut' }, 0.75)
-        desenharSol($('.contact-band .brand-mark'), {
-          atraso: 0.3,
-          scrollTrigger: { trigger: faixa, start: 'top 82%', once: true },
-        })
-
-        revelarLinhas($('.form-area h2'), { gatilho: form })
-        revelarBlocos($('.form-area > div > p'), { gatilho: form, atraso: 0.3, y: 14 })
-        revelarBlocos(r.querySelectorAll('form label, form button'), {
-          gatilho: $('form'),
-          inicio: 'top 88%',
-          atraso: 0.2,
-          y: 26,
-          stagger: 0.09,
-        })
+        revelarRotulos(painel)
+        revelarLinhas($('.contato-painel h2'), { gatilho: grade, atraso: 0.4 })
+        revelarBlocos(painel.querySelectorAll('.contato-painel-in > p, .contato-sol'), { gatilho: grade, atraso: 0.8, y: 18, stagger: 0.12 })
+        revelarBlocos(r.querySelectorAll('.cc-reveal'), { gatilho: cartao, inicio: 'top 82%', atraso: 0.5, y: 22, stagger: 0.08 })
       })
     },
     { scope: raiz },
   )
 
   return (
-    <section ref={raiz} id="contato" className="contact">
-      <div className="page-frame">
-        <div className="contact-title">
-          <span className="section-label"><i /> VAMOS CONVERSAR</span>
-          <h2>CONTATO</h2>
-        </div>
-        <div className="contact-band">
-          <span className="contact-brilho" aria-hidden="true" />
-          <SimboloSol className="brand-mark" />
-          <div>
-            <span>VAMOS COMEÇAR?</span>
-            <h3>O FUTURO PODE SER MAIS SOLAR.</h3>
+    <section ref={raiz} id="contato" className="contact" aria-labelledby="contato-titulo">
+      <div className="page-frame contato-grid">
+        <aside className="contato-painel">
+          <div className="contato-raios" aria-hidden="true" />
+          <div className="contato-painel-in">
+            <span className="section-label"><i /> VAMOS CONVERSAR</span>
+            <h2 id="contato-titulo">
+              O FUTURO PODE SER <span className="acento">MAIS SOLAR.</span>
+            </h2>
             <p>Conte se você representa uma empresa, instituição ou possível parceiro e como gostaria de participar.</p>
+            <div
+              className="contato-sol"
+              data-g0={+p.perfil}
+              data-g1={+p.nome}
+              data-g2={+p.contato}
+              data-g3={+p.mensagem}
+              data-completo={+(p.total === 4)}
+            >
+              <SimboloSol />
+            </div>
+            <p className="contato-status" aria-live="polite">{textoDoStatus(p)}</p>
           </div>
-          <a href="#formulario">PREENCHER FORMULÁRIO ↗</a>
-        </div>
-        <div className="form-area" id="formulario">
-          <div>
-            <h2>FORMULÁRIO</h2>
-            <p>O CANOPA é um projeto em desenvolvimento. Deixe sua mensagem para conhecer a proposta ou demonstrar interesse.</p>
-          </div>
-          <ContactForm />
-        </div>
+        </aside>
+        <FormularioContato onProgresso={setP} />
       </div>
     </section>
   )
