@@ -94,6 +94,11 @@ telas não mudam (os relatórios são listas de blocos).
 4. As ondas da capa de geração cruzavam o título → ficam na metade de cima e esmaecem.
 5. O título "A cada mês, mais energia" era contrariado pelo gráfico (sazonalidade) → "Cada projeto novo, mais energia".
 6. No celular o caminho do topo ficava grudado ("RelatóriosGeração…").
+7. **Só apareceu em produção:** as fotos das capas (projeto, instalação, impacto) davam 404 no site publicado. Eu as
+   carregava com `background: var(--foto)`, e uma URL relativa dentro de variável de CSS é resolvida a partir da
+   pasta do CSS (`assets/`), não da página; no servidor de desenvolvimento isso não aparecia. Agora são `<img>`
+   com `srcset` (480/800/original) e `loading="lazy"` nos cartões. Lição: o teste agora também falha se qualquer
+   requisição devolver erro, e roda na build de produção e no site publicado, não só em desenvolvimento.
 
 ## Verificação
 
@@ -104,7 +109,7 @@ Chromium (Playwright), com login e API simulados (nenhuma mensagem real é criad
 - hover e teclado nas barras, hover no calendário, tabelas (31 linhas), soma dos dias = energia do mês;
 - impressão: só o relatório, PDF gerado (4 páginas A4); captura em largura de A4 revisada;
 - celular de 390 px: sem rolagem lateral, viewport estável, alvos de toque ≥ 44px;
-- movimento reduzido: tudo visível e números no valor final; sem erros de console; testes do simulador seguem passando.
+- movimento reduzido: tudo visível e números no valor final; sem erros de console; nenhuma requisição falha (imagens, blocos, fontes); testes do simulador seguem passando. Tudo rodou em desenvolvimento, na build de produção e no site publicado.
 
 ## Pendências
 

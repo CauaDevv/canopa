@@ -1,6 +1,7 @@
 import SimboloSol from '../../../components/ui/SimboloSol'
 
 const BASE = import.meta.env.BASE_URL
+const LARGURA = { 'paineis-campo': 1200, 'paineis-aerea': 1000 } // largura da foto original
 
 // ondas de luz (relatórios de geração): cinco curvas defasadas
 const ondas = (k) => {
@@ -15,9 +16,20 @@ const ondas = (k) => {
   projeto e instalação = foto dos painéis sob um véu verde-petróleo. Decorativa.
 */
 export default function Arte({ tipo, foto, grande = false }) {
-  const estilo = foto ? { '--foto': `url(${BASE}images/fotos/${foto}${grande ? '' : '-800'}.webp)` } : undefined
   return (
-    <div className={`rel-arte rel-arte--${tipo}${foto ? ' rel-arte--foto' : ''}`} style={estilo} aria-hidden="true">
+    <div className={`rel-arte rel-arte--${tipo}${foto ? ' rel-arte--foto' : ''}`} aria-hidden="true">
+      {foto && (
+        // <img> e não background-image: uma URL relativa dentro de variável de CSS é resolvida a partir da pasta do CSS (assets/), não da página
+        <img
+          className="rel-arte-foto"
+          src={`${BASE}images/fotos/${foto}${grande ? '' : '-800'}.webp`}
+          srcSet={`${BASE}images/fotos/${foto}-480.webp 480w, ${BASE}images/fotos/${foto}-800.webp 800w${grande ? `, ${BASE}images/fotos/${foto}.webp ${LARGURA[foto]}w` : ''}`}
+          sizes={grande ? '(max-width: 900px) 92vw, 1000px' : '(max-width: 900px) 92vw, (max-width: 1100px) 46vw, 34vw'}
+          alt=""
+          decoding="async"
+          loading={grande ? 'eager' : 'lazy'}
+        />
+      )}
       <div className="rel-arte-raios" />
       {tipo === 'geracao' && (
         <svg className="rel-arte-ondas" viewBox="0 0 400 190" preserveAspectRatio="none">

@@ -25,7 +25,7 @@
 .rel-arte--contas .rel-arte-sol { color: #07535c; opacity: .16; }
 .rel-arte-aneis { position: absolute; right: -9%; bottom: -34%; z-index: -1; width: 78%; }
 .rel-arte-aneis circle { fill: none; stroke: rgba(7, 64, 74, .2); stroke-width: 9; }
-.rel-arte--foto::before { content: ''; position: absolute; inset: 0; z-index: -3; background: var(--foto) center / cover; transition: scale 1.2s var(--ease-sol); }
+.rel-arte-foto { position: absolute; inset: 0; z-index: -3; width: 100%; height: 100%; object-fit: cover; transition: scale 1.2s var(--ease-sol); }
 .rel-arte--foto::after { content: ''; position: absolute; inset: 0; z-index: -2; background: linear-gradient(100deg, rgba(5, 47, 56, .94) 0%, rgba(7, 62, 72, .76) 52%, rgba(7, 62, 72, .38) 100%); }
 .rel-arte--instalacao::after { background: linear-gradient(100deg, rgba(5, 47, 56, .94) 0%, rgba(7, 62, 72, .72) 55%, rgba(244, 190, 105, .4) 100%); }
 .rel-arte--foto .rel-arte-raios { display: none; }
@@ -57,7 +57,7 @@
 @media (hover: hover) and (pointer: fine) {
   .rel-card:hover { translate: 0 -4px; box-shadow: 0 30px 44px -28px rgba(7, 62, 72, .55); }
   .rel-card:hover .rel-arte-sol { rotate: 8deg; scale: 1.06; }
-  .rel-card:hover .rel-arte--foto::before { scale: 1.05; }
+  .rel-card:hover .rel-arte-foto { scale: 1.05; }
   .rel-card:hover .rel-card-seta { translate: 5px 0; color: #05707d; }
 }
 
