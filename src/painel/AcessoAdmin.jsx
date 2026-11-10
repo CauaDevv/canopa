@@ -1,9 +1,11 @@
-import { useState } from 'react'
+import { lazy, Suspense, useState } from 'react'
 import { X } from 'lucide-react'
 import { FlowButtonContent } from '../components/FlowButtonContent'
 import { call } from '../lib/api'
 import PainelAdmin from './PainelAdmin'
-import PainelCliente from './PainelCliente'
+
+// a visão do cliente (visão geral, projetos, relatórios) só desce quando alguém abre "Ir ao painel de cliente"
+const PainelCliente = lazy(() => import('./PainelCliente'))
 
 /*
   Acesso da equipe: tela de entrada e, depois do login, o painel. A sessão é um token
@@ -61,7 +63,9 @@ export default function AcessoAdmin({ onClose, Logo, Lines }) {
 
   if (token) {
     return modo === 'cliente' ? (
-      <PainelCliente usuario={usuario} aoVoltarAdmin={() => setModo('admin')} aoSair={sair} aoVoltarSite={onClose} />
+      <Suspense fallback={null}>
+        <PainelCliente usuario={usuario} aoVoltarAdmin={() => setModo('admin')} aoSair={sair} aoVoltarSite={onClose} />
+      </Suspense>
     ) : (
       <PainelAdmin
         usuario={usuario}

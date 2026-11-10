@@ -1,5 +1,5 @@
 import { useMemo, useRef } from 'react'
-import { Leaf, PiggyBank, TrendingUp, Wallet } from 'lucide-react'
+import { ArrowRight, FileText, Leaf, PiggyBank, TrendingUp, Wallet } from 'lucide-react'
 import SimboloSol from '../components/ui/SimboloSol'
 import { gsap, MIDIA, useGSAP } from '../lib/animacao'
 import { PROJETOS, porTipo, totais } from './dados-demo'
@@ -7,12 +7,14 @@ import { decimal, moeda, percentual } from '../lib/formatos'
 import Metrica from './Metrica'
 import RoscaInvestimento from './RoscaInvestimento'
 import TabelaProjetos from './TabelaProjetos'
+import { RELATORIOS, TIPOS_RELATORIO, dataPublicado } from './relatorios/dados'
 
 /* Visão geral do cliente: faixa de abertura, quatro métricas e, abaixo, rosca + tabela. */
-export default function PaginaVisaoGeral() {
+export default function PaginaVisaoGeral({ aoAbrirRelatorio }) {
   const raiz = useRef(null)
   const t = useMemo(() => totais(PROJETOS), [])
   const tipos = useMemo(() => porTipo(PROJETOS), [])
+  const novo = RELATORIOS[0]
 
   useGSAP(
     () => {
@@ -45,6 +47,16 @@ export default function PaginaVisaoGeral() {
           <Metrica Icone={Leaf} rotulo="CO₂ evitado" valor={t.co2} formatar={(v) => decimal(v, 1)} unidade="toneladas" nota="Estimativa de demonstração" />
           <Metrica Icone={TrendingUp} rotulo="Retorno médio (ROI)" valor={t.roi} formatar={(v) => percentual(v, 1)} nota="Economia anual ÷ investimento" />
         </div>
+
+        <button type="button" className="pn-novo-relatorio pn-revelar" onClick={() => aoAbrirRelatorio(novo.id)}>
+          <span className="pn-novo-relatorio-icone" aria-hidden="true"><FileText size={20} strokeWidth={1.8} /></span>
+          <span className="pn-novo-relatorio-texto">
+            <small>Relatório novo · {TIPOS_RELATORIO[novo.tipo].rotulo}</small>
+            <strong>{novo.titulo}, {novo.periodo}</strong>
+            <span>Publicado em {dataPublicado(novo)}</span>
+          </span>
+          <span className="pn-novo-relatorio-seta">Abrir relatório <ArrowRight size={16} aria-hidden="true" /></span>
+        </button>
 
         <div className="pn-grade">
           <RoscaInvestimento dados={tipos} />

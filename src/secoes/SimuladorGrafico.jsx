@@ -1,4 +1,5 @@
-import { useId, useLayoutEffect, useRef, useState } from 'react'
+import { useId, useRef, useState } from 'react'
+import useLargura from '../hooks/useLargura'
 import { PREMISSAS, compacto, numero } from '../lib/simulador'
 
 const ANOS = PREMISSAS.anos
@@ -20,19 +21,11 @@ const limitar = (v, min, max) => Math.min(max, Math.max(min, v))
 export default function SimuladorGrafico({ v, alvo }) {
   const [, custo, escala, retorno, ...acumulado] = v
   const caixa = useRef(null)
-  const [largura, setLargura] = useState(480)
   const [ano, setAno] = useState(null)
   const [teclado, setTeclado] = useState(false)
   const gradiente = useId()
 
-  useLayoutEffect(() => {
-    const el = caixa.current
-    const medir = () => setLargura(Math.round(el.getBoundingClientRect().width) || 480)
-    medir()
-    const observador = new ResizeObserver(medir)
-    observador.observe(el)
-    return () => observador.disconnect()
-  }, [])
+  const largura = useLargura(caixa)
 
   const altura = largura < 420 ? 176 : 200
   const base = altura - MARGEM.b

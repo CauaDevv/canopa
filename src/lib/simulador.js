@@ -18,6 +18,11 @@
   - tarifa, cobertura, rendimento: valores típicos; mudam de distribuidora para distribuidora.
 */
 
+import { compacto, numero, tetoRedondo } from './formatos'
+
+// o gráfico e as telas do simulador importam daqui; os formatadores moraram em formatos.js para os relatórios também usarem
+export { compacto, numero }
+
 export const PREMISSAS = {
   tarifa: 0.95, // R$ por kWh, com impostos
   custoKwp: 3200, // R$ por kWp instalado
@@ -44,13 +49,6 @@ export const REGIAO_INICIAL = 'Sudeste'
 // escolas, creches e ONGs: contas de algumas centenas a poucos milhares de reais
 export const CONTA = { min: 300, max: 6000, passo: 50, inicial: 1800 }
 export const REAJUSTE = { min: 3, max: 10, passo: 0.5, inicial: 5 }
-
-// teto "redondo" do gráfico: 1, 2, 4, 5 ou 10 × potência de dez (a metade também é um número limpo)
-function tetoRedondo(valor) {
-  const potencia = 10 ** Math.floor(Math.log10(valor))
-  const n = valor / potencia
-  return (n <= 1 ? 1 : n <= 2 ? 2 : n <= 4 ? 4 : n <= 5 ? 5 : 10) * potencia
-}
 
 export function calcular({ conta, hsp, reajuste }) {
   const p = PREMISSAS
@@ -93,16 +91,6 @@ export function calcular({ conta, hsp, reajuste }) {
     co2: (kwhGerado * p.co2PorKwh) / 1000, // toneladas no período
     escala: tetoRedondo(Math.max(total, custo) * 1.08),
   }
-}
-
-const inteiro = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 0 })
-export const numero = (v) => inteiro.format(Math.round(v))
-
-// eixo do gráfico: 500 mil, 1 mi, 2,5 mi
-export function compacto(v) {
-  if (v < 1000) return numero(v)
-  if (v < 1e6) return `${numero(v / 1000)} mil`
-  return `${new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 1 }).format(v / 1e6)} mi`
 }
 
 // "3 anos e 2 meses", "8 meses"

@@ -158,6 +158,16 @@
 .pn-vazio { padding: 28px 12px; text-align: center; color: var(--pn-sutil); }
 .pn-nota { margin-top: 20px; font-size: 12.5px; color: var(--pn-sutil); text-align: center; }
 
+/* aviso de relatório novo na visão geral */
+.pn-novo-relatorio { display: flex; align-items: center; gap: 16px; width: 100%; margin-top: 20px; padding: 16px 20px; border: 1px solid #f1d6a0; border-radius: 16px; background: linear-gradient(100deg, #fff7e6, #fdefd0); color: var(--pn-tinta); text-align: left; cursor: pointer; box-shadow: var(--pn-sombra); transition: translate .35s var(--ease-sol), box-shadow .35s; }
+.pn-novo-relatorio:hover { translate: 0 -2px; box-shadow: 0 22px 34px -24px rgba(228, 160, 40, .85); }
+.pn-novo-relatorio-icone { display: grid; place-items: center; flex: none; width: 44px; height: 44px; border-radius: 12px; background: linear-gradient(135deg, #f9ca78, #f4be69); color: #07404a; }
+.pn-novo-relatorio-texto { display: flex; flex: 1; flex-direction: column; gap: 2px; min-width: 0; }
+.pn-novo-relatorio-texto small { font: 700 10.5px/1.3 'DM Sans', sans-serif; letter-spacing: .14em; text-transform: uppercase; color: #8a5a00; }
+.pn-novo-relatorio-texto strong { font-size: 16px; }
+.pn-novo-relatorio-texto span { font-size: 13px; color: var(--pn-sutil); }
+.pn-novo-relatorio-seta { display: inline-flex; align-items: center; flex: none; gap: 6px; font-size: 13.5px; font-weight: 700; color: #8a5a00; }
+
 /* busca (projetos e mensagens) */
 .pn-busca { position: relative; margin-bottom: 20px; }
 .pn-busca svg { position: absolute; left: 16px; top: 50%; translate: 0 -50%; color: #529298; pointer-events: none; }
@@ -220,6 +230,7 @@
   .pn-recolher { display: none; } /* na gaveta do celular "recolher" não faz sentido */
 }
 @media (max-width: 720px) {
+  .pn-novo-relatorio-seta { display: none; }
   .pn-botao--voltar { display: none; }
   .pn-faixa { padding: 32px 0 104px; }
   .pn-metricas { gap: 12px; }
@@ -236,7 +247,7 @@
 }
 @media (max-width: 560px) {
   .pn-caminho span:first-child { display: none; }
-  .pn-caminho span + span::before { display: none; }
+  .pn-caminho span:nth-child(2)::before { display: none; }
 }
 @media (max-width: 420px) {
   .pn-metricas { grid-template-columns: minmax(0, 1fr); }

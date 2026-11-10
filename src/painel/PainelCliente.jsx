@@ -1,10 +1,14 @@
-import { useEffect, useState } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import { ArrowLeft, Eye, FileText, FolderKanban, LayoutDashboard, Leaf } from 'lucide-react'
 import PainelShell from './PainelShell'
 import PaginaProjetos from './PaginaProjetos'
 import PaginaVisaoGeral from './PaginaVisaoGeral'
+import { relatorioPorId } from './relatorios/dados'
 
-const PAGINAS = { geral: 'Visão geral', projetos: 'Projetos' }
+// relatórios (capa, gráficos, leitor) só descem quando o cliente abre a página
+const PaginaRelatorios = lazy(() => import('./relatorios/PaginaRelatorios'))
+
+const PAGINAS = { geral: 'Visão geral', projetos: 'Projetos', relatorios: 'Relatórios' }
 
 /*
   Visão do cliente: é o que o cliente vai enxergar, aberta de dentro da conta admin
@@ -13,22 +17,32 @@ const PAGINAS = { geral: 'Visão geral', projetos: 'Projetos' }
 */
 export default function PainelCliente({ usuario, aoVoltarAdmin, aoSair, aoVoltarSite }) {
   const [pagina, setPagina] = useState('geral')
+  const [relatorioId, setRelatorioId] = useState(null)
 
-  useEffect(() => { document.getElementById('pn-conteudo')?.scrollTo(0, 0) }, [pagina])
+  useEffect(() => { document.getElementById('pn-conteudo')?.scrollTo(0, 0) }, [pagina, relatorioId])
+
+  const abrirRelatorio = (id) => {
+    setRelatorioId(id)
+    setPagina('relatorios')
+  }
+  const irPara = (id) => {
+    setRelatorioId(null)
+    setPagina(id)
+  }
 
   const grupos = [
     {
       titulo: 'Painel',
       itens: [
-        { id: 'geral', rotulo: PAGINAS.geral, Icone: LayoutDashboard, ativo: pagina === 'geral', aoClicar: () => setPagina('geral') },
-        { id: 'projetos', rotulo: PAGINAS.projetos, Icone: FolderKanban, ativo: pagina === 'projetos', aoClicar: () => setPagina('projetos') },
+        { id: 'geral', rotulo: PAGINAS.geral, Icone: LayoutDashboard, ativo: pagina === 'geral', aoClicar: () => irPara('geral') },
+        { id: 'projetos', rotulo: PAGINAS.projetos, Icone: FolderKanban, ativo: pagina === 'projetos', aoClicar: () => irPara('projetos') },
+        { id: 'relatorios', rotulo: PAGINAS.relatorios, Icone: FileText, ativo: pagina === 'relatorios', aoClicar: () => irPara('relatorios') },
       ],
     },
     {
       titulo: 'Em breve',
       itens: [
         { id: 'impacto', rotulo: 'Impacto', Icone: Leaf, emBreve: true },
-        { id: 'relatorios', rotulo: 'Relatórios', Icone: FileText, emBreve: true },
       ],
     },
   ]
@@ -47,13 +61,19 @@ export default function PainelCliente({ usuario, aoVoltarAdmin, aoSair, aoVoltar
     <PainelShell
       modo="cliente"
       grupos={grupos}
-      caminho={['Painel do cliente', PAGINAS[pagina]]}
+      caminho={['Painel do cliente', PAGINAS[pagina], ...(relatorioId ? [relatorioPorId(relatorioId).titulo] : [])]}
       usuario={usuario}
       aviso={aviso}
       aoSair={aoSair}
       aoVoltarSite={aoVoltarSite}
     >
-      {pagina === 'geral' ? <PaginaVisaoGeral key="geral" /> : <PaginaProjetos key="projetos" />}
+      {pagina === 'geral' && <PaginaVisaoGeral key="geral" aoAbrirRelatorio={abrirRelatorio} />}
+      {pagina === 'projetos' && <PaginaProjetos key="projetos" />}
+      {pagina === 'relatorios' && (
+        <Suspense fallback={<p className="pn-vazio" role="status">Carregando relatórios…</p>}>
+          <PaginaRelatorios abertoId={relatorioId} aoAbrir={setRelatorioId} aoFechar={() => setRelatorioId(null)} />
+        </Suspense>
+      )}
     </PainelShell>
   )
 }
