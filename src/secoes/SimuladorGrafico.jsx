@@ -1,5 +1,6 @@
-import { useId, useRef, useState } from 'react'
+import { useCallback, useId, useRef, useState } from 'react'
 import useLargura from '../hooks/useLargura'
+import useToqueFora from '../hooks/useToqueFora'
 import { PREMISSAS, compacto, numero } from '../lib/simulador'
 
 const ANOS = PREMISSAS.anos
@@ -24,6 +25,8 @@ export default function SimuladorGrafico({ v, alvo }) {
   const [ano, setAno] = useState(null)
   const [teclado, setTeclado] = useState(false)
   const gradiente = useId()
+  const limpar = useCallback(() => setAno(null), [])
+  useToqueFora(caixa, ano !== null, limpar)
 
   const largura = useLargura(caixa)
 
@@ -132,7 +135,7 @@ export default function SimuladorGrafico({ v, alvo }) {
           height={altura}
           onPointerMove={anoDoPonteiro}
           onPointerDown={anoDoPonteiro}
-          onPointerLeave={() => setAno(null)}
+          onPointerLeave={(e) => e.pointerType === 'mouse' && setAno(null)}
         />
       </svg>
 

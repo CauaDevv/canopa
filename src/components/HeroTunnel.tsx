@@ -43,13 +43,13 @@ const TOTAL_SEGMENTOS = 14
 const COLUNAS = 6 // células no piso e no teto
 const FILEIRAS = 4 // células em cada parede
 const MARGEM_CELULA = 0.4
-const DENSIDADE_NEVOA = 0.035
-const OPACIDADE_FOTO = 0.85
+const DENSIDADE_NEVOA = 0.02 // era 0,035: a névoa apagava as fotos antes de elas chegarem perto
+const OPACIDADE_FOTO = 1
 const COMPRIMENTO_TOTAL = TOTAL_SEGMENTOS * PROFUNDIDADE_SEGMENTO
 
 /* Chance de uma célula receber foto (o original sorteia por face) */
-const CHANCE_PISO_PAREDE = 0.16 // Math.random() > 0.8
-const CHANCE_TETO = 0.09 // Math.random() > 0.88
+const CHANCE_PISO_PAREDE = 0.26 // era 0,16: mais fotos no corredor
+const CHANCE_TETO = 0.15 // era 0,09
 
 /** Arestas longitudinais do piso/teto + linhas intermediárias das paredes. */
 function criarGeometriaGrade() {

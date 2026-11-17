@@ -20,7 +20,7 @@ function lerCor(cor, padrao) {
 }
 
 /** Liga o campo. Devolve a função de limpeza (ou `undefined` se não há canvas: fica só a grade de pontos do CSS). */
-export function iniciarCampo({ root, canvas: cv, botao: cta, palco: stage, rotulo: lbl, pausa: pauseB, pausaTxt: pauseT }) {
+export function iniciarCampo({ root, canvas: cv, botao: cta, palco: stage, rotulo: lbl }) {
   const ctx = cv && cv.getContext && cv.getContext('2d')
   if (!ctx || !cta || !stage) return // sem canvas: fica a grade de pontos do CSS, parada
 
@@ -51,7 +51,7 @@ export function iniciarCampo({ root, canvas: cv, botao: cta, palco: stage, rotul
   let W = 1, H = 1, dpr = 1, BX = 0, BY = 0, BR = 120, N = 0
   let X, Y, ANG, AV, LEN
   let raf = 0, last = 0, clock = 0
-  let visible = false, entered = false, paused = false, openAt = 1e9, hover = false, hv = 0
+  let visible = false, entered = false, openAt = 1e9, hover = false, hv = 0
   let px = -1e4, py = -1e4, pOn = 0, ptrT = -1e9, down = null, nextWave = 3, gx = 0, gy = 0, bx = 0, by = 0
   const waves = []
   const timers = []
@@ -196,7 +196,7 @@ export function iniciarCampo({ root, canvas: cv, botao: cta, palco: stage, rotul
     }
   }
 
-  const canRun = () => visible && entered && !paused && !still && !document.hidden
+  const canRun = () => visible && entered && !still && !document.hidden
 
   function frame(now) {
     raf = 0
@@ -283,20 +283,6 @@ export function iniciarCampo({ root, canvas: cv, botao: cta, palco: stage, rotul
     if (v) hover = true
   }
   const aoDesfocar = () => { hover = false }
-  const aoPausar = () => {
-    paused = !paused
-    root.classList.toggle('campo-live', visible && !paused && !still)
-    pauseB.setAttribute('aria-pressed', String(paused))
-    pauseB.setAttribute('aria-label', paused ? 'Retomar animação' : 'Pausar animação')
-    if (pauseT) pauseT.textContent = paused ? 'Retomar' : 'Pausar'
-    if (paused) {
-      stop()
-      if (clock - openAt < 1.6) {
-        openAt = clock - 2
-        draw(1)
-      }
-    } else start()
-  }
   const aoVisibilidade = () => (document.hidden ? stop() : start())
 
   root.addEventListener('pointermove', aoMover, { passive: true })
@@ -308,7 +294,6 @@ export function iniciarCampo({ root, canvas: cv, botao: cta, palco: stage, rotul
   cta.addEventListener('pointerleave', aoSairBotao)
   cta.addEventListener('focus', aoFocar)
   cta.addEventListener('blur', aoDesfocar)
-  if (pauseB) pauseB.addEventListener('click', aoPausar)
   document.addEventListener('visibilitychange', aoVisibilidade)
 
   let ro = null
@@ -333,7 +318,7 @@ export function iniciarCampo({ root, canvas: cv, botao: cta, palco: stage, rotul
           }
         }
         visible = en[en.length - 1].isIntersecting
-        root.classList.toggle('campo-live', visible && !paused && !still)
+        root.classList.toggle('campo-live', visible && !still)
         if (visible) start()
         else stop()
       },
@@ -363,7 +348,6 @@ export function iniciarCampo({ root, canvas: cv, botao: cta, palco: stage, rotul
     cta.removeEventListener('pointerleave', aoSairBotao)
     cta.removeEventListener('focus', aoFocar)
     cta.removeEventListener('blur', aoDesfocar)
-    if (pauseB) pauseB.removeEventListener('click', aoPausar)
     root.classList.remove('campo-js', 'campo-go', 'campo-live')
   }
 

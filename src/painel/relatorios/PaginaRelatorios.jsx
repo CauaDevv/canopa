@@ -94,7 +94,7 @@ function Lista({ aoAbrir }) {
   )
 }
 
-export default function PaginaRelatorios({ abertoId, aoAbrir, aoFechar }) {
+export default function PaginaRelatorios({ abertoId, aoAbrir, aoFechar, rotuloVoltar }) {
   const aberto = abertoId ? relatorioPorId(abertoId) : null
-  return aberto ? <RelatorioLeitor key={aberto.id} relatorio={aberto} aoVoltar={aoFechar} /> : <Lista aoAbrir={aoAbrir} />
+  return aberto ? <RelatorioLeitor key={aberto.id} relatorio={aberto} rotuloVoltar={rotuloVoltar} aoVoltar={aoFechar} aoAbrirRelatorio={aoAbrir} /> : <Lista aoAbrir={aoAbrir} />
 }

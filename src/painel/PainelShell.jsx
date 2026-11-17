@@ -3,6 +3,7 @@ import { ChevronsLeft, ChevronsRight, Globe, LogOut, Menu, X } from 'lucide-reac
 import SimboloSol from '../components/ui/SimboloSol'
 import { useMediaQuery } from '../components/use-media-query'
 import { iniciais } from '../lib/formatos'
+import TrilhoDeVidro from './TrilhoDeVidro'
 import './painel.css'
 
 const CHAVE_RECOLHIDO = 'canopa_painel_lateral'
@@ -37,6 +38,8 @@ export default function PainelShell({ modo, grupos, caminho, usuario, aviso, aco
 
   const fechar = () => setMenuAberto(false)
   const escondida = celular && !menuAberto
+  // a lente de vidro do menu reposiciona quando muda o item ativo ou a largura da barra
+  const chaveLente = [grupos.flatMap((g) => g.itens).find((i) => i.ativo)?.id, recolhido, celular, menuAberto].join('|')
 
   return (
     <div className={'pn pn--' + modo + (recolhido && !celular ? ' recolhido' : '') + (menuAberto ? ' menu-aberto' : '')} data-lenis-prevent>
@@ -53,6 +56,7 @@ export default function PainelShell({ modo, grupos, caminho, usuario, aviso, aco
         </div>
 
         <nav className="pn-nav" aria-label="Navegação do painel">
+          <TrilhoDeVidro chave={chaveLente} raio={14}>
           {grupos.map((g) => (
             <div key={g.titulo}>
               <h3 className="pn-rotulo">{g.titulo}</h3>
@@ -62,6 +66,7 @@ export default function PainelShell({ modo, grupos, caminho, usuario, aviso, aco
                     <button
                       type="button"
                       className="pn-item"
+                      data-lente
                       aria-current={ativo ? 'page' : undefined}
                       disabled={emBreve}
                       title={recolhido ? rotulo : undefined}
@@ -76,6 +81,7 @@ export default function PainelShell({ modo, grupos, caminho, usuario, aviso, aco
               </ul>
             </div>
           ))}
+          </TrilhoDeVidro>
         </nav>
 
         <div className="pn-pe">

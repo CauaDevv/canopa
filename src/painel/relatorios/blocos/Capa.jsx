@@ -18,7 +18,7 @@ export default function Capa({ relatorio: r, tituloRef }) {
         <p className="rel-capa-chamada">{r.chamada}</p>
         <p className="rel-capa-meta">
           <span><Clock size={14} aria-hidden="true" /> {r.periodo}</span>
-          <span><CalendarDays size={14} aria-hidden="true" /> Publicado em {dataPublicado(r)}</span>
+          <span><CalendarDays size={14} aria-hidden="true" /> {r.dataRotulo ?? `Publicado em ${dataPublicado(r)}`}</span>
         </p>
       </div>
     </header>

@@ -16,7 +16,7 @@ export default function useVisto(ref) {
         setVisto(true)
         observador.disconnect()
       },
-      { threshold: 0.12, rootMargin: '0px 0px -8% 0px' },
+      { threshold: 0.12, rootMargin: '0px 0px -80px 0px' } // margem fixa: em % o último bloco nunca "entrava" numa tela muito alta,
     )
     observador.observe(el)
     return () => observador.disconnect()

@@ -7,19 +7,16 @@ import { chamarFormulario } from '../lib/formulario'
 import { revelarLinhas } from '../lib/revelar'
 import './Contato.css'
 
-const FALTAM = {
-  perfil: 'seu perfil',
-  nome: 'seu nome',
-  contato: 'e-mail e telefone',
-  mensagem: 'a mensagem',
-}
+// "a, b e c": o último item leva "e", como se fala
+const lista = (itens) => (typeof Intl.ListFormat === 'function' ? new Intl.ListFormat('pt-BR', { style: 'long', type: 'conjunction' }).format(itens) : itens.join(', '))
 
 function textoDoStatus(p) {
   if (p.enviado) return 'Mensagem enviada. O sol nasceu!'
   if (p.total === 4) return 'Tudo pronto. É só enviar!'
-  if (p.total === 0) return 'Escolha seu perfil para o sol começar a nascer.'
-  const faltam = Object.keys(FALTAM).filter((k) => !p[k]).map((k) => FALTAM[k])
-  return `Falta: ${faltam.join(', ')}.`
+  // nada feito ainda (os cinco campos pendentes): convite em vez de uma lista de tudo
+  if (p.faltam.length >= 5) return 'Escolha seu perfil para o sol começar a nascer.'
+  // o que falta vem do próprio formulário, campo a campo (e-mail e telefone não se misturam mais)
+  return p.faltam.length ? `Falta: ${lista(p.faltam)}.` : 'Tudo pronto. É só enviar!'
 }
 
 const FOCAVEIS = 'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
@@ -33,7 +30,7 @@ const FOCAVEIS = 'a[href], button:not([disabled]), input:not([disabled]), textar
 */
 export default function Contato({ aberto, aoFechar }) {
   const raiz = useRef(null)
-  const [p, setP] = useState({ perfil: false, nome: false, contato: false, mensagem: false, total: 0 })
+  const [p, setP] = useState({ perfil: false, nome: false, contato: false, mensagem: false, total: 0, faltam: [] })
 
   // Esc fecha; Tab não escapa da janela (aria-modal)
   useEffect(() => {

@@ -1,6 +1,7 @@
 import { Hammer, FolderKanban, Leaf, Sun, Wallet } from 'lucide-react'
 import { decimal, moeda, numero } from '../../lib/formatos'
 import { PROJETOS, TIPOS } from '../dados-demo'
+import { CONTA_SEM, MARCOS, PAINEIS_INSTALADOS, placasDe } from './projetos'
 
 /*
   RELATÓRIOS DE EXEMPLO. Nada aqui é real: parceiros, beneficiários e valores são os
@@ -28,20 +29,20 @@ export const TIPOS_RELATORIO = {
 }
 
 const TARIFA = 0.95
-const MESES = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez']
+export const MESES = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez']
 const BRUTO = [1.08, 1.04, 1.0, 0.93, 0.86, 0.82, 0.84, 0.92, 0.97, 1.04, 1.07, 1.09]
 const SAZONAL = BRUTO.map((v) => (v * 12) / BRUTO.reduce((s, x) => s + x, 0)) // média 1 no ano
-const INICIO = { p1: 2, p2: 4, p4: 6 } // mês (0 = janeiro) em que cada projeto começou a gerar
-const OUT = 9
+export const INICIO = { p1: 2, p2: 4, p4: 6 } // mês (0 = janeiro) em que cada projeto começou a gerar
+export const OUT = 9
 const CONSUMO_RESIDENCIA = 160 // kWh por mês, consumo residencial médio usado nas equivalências
 
 const projeto = (id) => PROJETOS.find((p) => p.id === id)
-const kwh = (p, m) => (INICIO[p.id] !== undefined && m >= INICIO[p.id] ? Math.round((p.economiaAnual / TARIFA / 12) * SAZONAL[m]) : 0)
-const economia = (p, m) => kwh(p, m) * TARIFA
-const co2 = (p, m) => (kwh(p, m) ? (p.co2 / 12) * SAZONAL[m] : 0)
-const meses = (a, b) => Array.from({ length: b - a + 1 }, (_, i) => a + i)
+export const kwh = (p, m) => (INICIO[p.id] !== undefined && m >= INICIO[p.id] ? Math.round((p.economiaAnual / TARIFA / 12) * SAZONAL[m]) : 0)
+export const economia = (p, m) => kwh(p, m) * TARIFA
+export const co2 = (p, m) => (kwh(p, m) ? (p.co2 / 12) * SAZONAL[m] : 0)
+export const meses = (a, b) => Array.from({ length: b - a + 1 }, (_, i) => a + i)
 const somar = (lista, ms, f) => lista.reduce((s, p) => s + ms.reduce((t, m) => t + f(p, m), 0), 0)
-const curto = (p) => p.beneficiario.replace(/^(Escola Comunitária|Instituto|Creche|ONG) /, '')
+export const curto = (p) => p.beneficiario.replace(/^(Escola Comunitária|Instituto|Creche|ONG) /, '')
 const dia = (iso) => iso.split('-').reverse().join('/')
 
 // distribuição ilustrativa do total do mês em dias (determinística; alguns dias nublados)
@@ -103,7 +104,7 @@ function geracaoOutubro() {
         tipo: 'calendario',
         eyebrow: 'Dia a dia',
         titulo: 'Os dias de outubro, do mais ao menos ensolarado',
-        subtitulo: 'Cada quadrado é um dia. Quanto mais escuro, mais energia os projetos geraram.',
+        subtitulo: 'Cada quadrado é um dia. Quanto mais forte a cor, mais energia os projetos geraram.',
         ano: 2026,
         mes: OUT,
         valores: dias,
@@ -122,7 +123,7 @@ function geracaoOutubro() {
         formato: 'int',
         unidade: 'kWh',
         categorias: PROJETOS.map(curto),
-        series: [{ id: 'geracao', nome: 'Geração em outubro', cor: '#0a7480', valores: PROJETOS.map((p) => kwh(p, OUT)) }],
+        series: [{ id: 'geracao', nome: 'Geração em outubro', cor: '#2bc4d3', valores: PROJETOS.map((p) => kwh(p, OUT)) }],
         vazio: 'em instalação',
       },
       {
@@ -150,6 +151,7 @@ function impactoTrimestre() {
   const serie = (tipo) => ms.map((m) => PROJETOS.filter((p) => p.tipo === tipo).reduce((s, p) => s + kwh(p, m), 0))
   return {
     id: 'impacto-2026-t3',
+    projetos: ['p1', 'p2', 'p4'], // só os que operaram no trimestre
     tipo: 'impacto',
     titulo: 'Impacto do 3º trimestre',
     chamada: 'O sol nasceu para mais instituições a cada mês.',
@@ -288,11 +290,12 @@ function prestacaoDeContas() {
 function projetoEscola() {
   const p = projeto('p1')
   const ms = meses(2, 8)
-  const sem = 1290
+  const sem = CONTA_SEM.p1
   const com = ms.map((m) => Math.max(45, Math.round(sem - economia(p, m))))
   const media = com.reduce((s, v) => s + v, 0) / com.length
   return {
     id: 'projeto-viver-bem',
+    projetos: ['p1'],
     tipo: 'projeto',
     titulo: p.beneficiario,
     chamada: `Sete meses de sol na escola, apadrinhada por ${p.parceiro}.`,
@@ -327,8 +330,8 @@ function projetoEscola() {
         unidade: 'R$',
         categorias: ms.map((m) => MESES[m]),
         series: [
-          { id: 'sem', nome: 'Sem energia solar', cor: '#bcdcdb', valores: ms.map(() => sem) },
-          { id: 'com', nome: 'Com energia solar', cor: '#0a7480', valores: com },
+          { id: 'sem', nome: 'Sem energia solar', cor: '#5d8c92', valores: ms.map(() => sem) },
+          { id: 'com', nome: 'Com energia solar', cor: '#2bc4d3', valores: com },
         ],
       },
       {
@@ -341,12 +344,7 @@ function projetoEscola() {
         eyebrow: 'Jornada',
         titulo: 'Do cadastro ao sol funcionando',
         subtitulo: 'As mesmas quatro etapas da jornada do CANOPA.',
-        marcos: [
-          { titulo: 'Inscrição', data: '12 de janeiro de 2026', texto: 'A escola apresentou sua necessidade e a conta de energia dos últimos meses.', estado: 'feito' },
-          { titulo: 'Parceria', data: '3 de fevereiro de 2026', texto: `${p.parceiro} apadrinhou o projeto e o investimento foi confirmado.`, estado: 'feito' },
-          { titulo: 'Instalação', data: '2 a 18 de março de 2026', texto: 'Instalação dos painéis, inversores e do sistema de monitoramento.', estado: 'feito' },
-          { titulo: 'Em operação', data: 'Desde 25 de março de 2026', texto: 'Ligação à rede da distribuidora e geração acompanhada todos os meses.', estado: 'atual' },
-        ],
+        marcos: MARCOS.p1,
       },
       {
         tipo: 'notas',
@@ -364,10 +362,11 @@ function projetoEscola() {
 /* ---------- 5. Instalação · Creche Tia Maria (em andamento) ---------- */
 function instalacaoCreche() {
   const p = projeto('p3')
-  const total = Math.ceil((p.kwp * 1000) / 550)
-  const feitas = 14
+  const total = placasDe(p)
+  const feitas = PAINEIS_INSTALADOS.p3
   return {
     id: 'instalacao-tia-maria',
+    projetos: ['p3'],
     tipo: 'instalacao',
     titulo: p.beneficiario,
     chamada: `A instalação está em andamento. Apadrinhada por ${p.parceiro}.`,
@@ -410,13 +409,7 @@ function instalacaoCreche() {
         eyebrow: 'Jornada',
         titulo: 'O que já aconteceu e o que falta',
         subtitulo: 'Atualizado a cada etapa concluída.',
-        marcos: [
-          { titulo: 'Inscrição', data: '9 de junho de 2026', texto: 'A creche apresentou sua necessidade e as contas de energia.', estado: 'feito' },
-          { titulo: 'Parceria', data: '1º de setembro de 2026', texto: `${p.parceiro} apadrinhou o projeto.`, estado: 'feito' },
-          { titulo: 'Instalação dos painéis', data: 'Em andamento · atualizado em 28 de outubro', texto: `${feitas} de ${total} painéis instalados no telhado; a equipe segue com a parte elétrica.`, estado: 'atual' },
-          { titulo: 'Vistoria da distribuidora', data: 'Previsto para novembro de 2026', texto: 'A distribuidora confere o sistema antes de autorizar a ligação.', estado: 'futuro' },
-          { titulo: 'Em operação', data: 'Previsto para dezembro de 2026', texto: 'Ligação à rede e início do acompanhamento mensal de geração.', estado: 'futuro' },
-        ],
+        marcos: MARCOS.p3,
       },
       {
         tipo: 'notas',

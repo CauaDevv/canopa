@@ -45,6 +45,15 @@ function telefoneValido(texto) {
 }
 
 // mensagens que dizem o que corrigir e onde, sem culpar a pessoa
+// o que dizer na lista "Falta: …" do painel ao lado, campo a campo: vazio pede o campo; preenchido mas errado pede a correção
+const PENDENCIA = {
+  perfil: () => 'como você quer participar',
+  name: () => 'seu nome',
+  email: (v) => (v.trim() ? 'um e-mail válido' : 'seu e-mail'),
+  phone: (v) => (v.trim() ? 'o telefone com DDD' : 'seu telefone'),
+  message: (v) => (v.trim() ? 'uma mensagem com pelo menos 10 caracteres' : 'a mensagem'),
+}
+
 const regras = {
   perfil: (v) => (v ? '' : 'Escolha como você quer participar.'),
   name: (v) => (v.trim().length >= 2 ? '' : 'Informe seu nome.'),
@@ -83,12 +92,13 @@ export default function FormularioContato({ onProgresso }) {
   const erros = useMemo(() => Object.fromEntries(ORDEM.map((k) => [k, regras[k](v[k])])), [v])
   const ok = { perfil: !erros.perfil, nome: !erros.name, contato: !erros.email && !erros.phone, mensagem: !erros.message }
   const total = Object.values(ok).filter(Boolean).length
-  const chave = `${+ok.perfil}${+ok.nome}${+ok.contato}${+ok.mensagem}`
+  const faltam = ORDEM.filter((k) => erros[k]).map((k) => PENDENCIA[k](v[k]))
+  const chave = `${+ok.perfil}${+ok.nome}${+ok.contato}${+ok.mensagem}|${faltam.join('|')}`
   const mostrar = (k) => ((tocados[k] || tentou) && erros[k] ? erros[k] : '')
 
   // avisa o painel ao lado: cada etapa concluída acende uma parte do sol
   useEffect(() => {
-    onProgresso?.(enviado ? { perfil: true, nome: true, contato: true, mensagem: true, total: 4, enviado: true } : { ...ok, total })
+    onProgresso?.(enviado ? { perfil: true, nome: true, contato: true, mensagem: true, total: 4, enviado: true, faltam: [] } : { ...ok, total, faltam })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chave, enviado])
 

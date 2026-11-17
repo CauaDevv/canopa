@@ -4,9 +4,10 @@ import { decimal, moeda } from '../../../lib/formatos'
 import Bloco from './Bloco'
 import VerDados from './VerDados'
 
-// um tom só (verde-petróleo → claro), do maior para o menor: a ordem já conta a história
-const RAMPA = ['#07535c', '#0a7480', '#0a98a6', '#7ccdd4', '#bfe8ea']
-const CLARO = new Set([3, 4])
+// um tom só (turquesa), do maior para o menor: a ordem já conta a história. As cores são variáveis
+// (relatorios.css) porque no PDF a rampa inverte: sobre papel branco o maior é o mais escuro.
+const rampa = (i) => `var(--rel-ramp-${i})`
+const CLARO = new Set([3, 4]) // no tema de papel, só estes dois levam texto escuro
 
 /*
   Barra segmentada: um todo (o investimento) dividido em partes. Cada parte mostra seu
@@ -28,7 +29,7 @@ function Barra({ dados }) {
             <div
               key={p.nome}
               className={'rel-comp-parte' + (CLARO.has(i) ? ' clara' : '') + (ativo !== null && ativo !== i ? ' apagada' : '')}
-              style={{ flexGrow: p.valor, background: RAMPA[i], '--i': i }}
+              style={{ flexGrow: p.valor, background: rampa(i), '--i': i }}
               onPointerEnter={() => setAtivo(i)}
               onPointerLeave={() => setAtivo(null)}
             >
@@ -41,7 +42,7 @@ function Barra({ dados }) {
       <ul className="rel-comp-legenda">
         {dados.partes.map((p, i) => (
           <li key={p.nome} className={ativo === i ? 'ativo' : undefined} tabIndex={0} onPointerEnter={() => setAtivo(i)} onPointerLeave={() => setAtivo(null)} onFocus={() => setAtivo(i)} onBlur={() => setAtivo(null)}>
-            <i style={{ background: RAMPA[i] }} aria-hidden="true" />
+            <i style={{ background: rampa(i) }} aria-hidden="true" />
             <span>{p.nome}</span>
             <strong>{moeda(p.valor)}</strong>
           </li>

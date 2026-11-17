@@ -4,6 +4,7 @@ import PainelShell from './PainelShell'
 import PaginaProjetos from './PaginaProjetos'
 import PaginaVisaoGeral from './PaginaVisaoGeral'
 import { relatorioPorId } from './relatorios/dados'
+import { PROJETOS } from './dados-demo'
 
 // relatórios (capa, gráficos, leitor) só descem quando o cliente abre a página
 const PaginaRelatorios = lazy(() => import('./relatorios/PaginaRelatorios'))
@@ -18,15 +19,33 @@ const PAGINAS = { geral: 'Visão geral', projetos: 'Projetos', relatorios: 'Rela
 export default function PainelCliente({ usuario, aoVoltarAdmin, aoSair, aoVoltarSite }) {
   const [pagina, setPagina] = useState('geral')
   const [relatorioId, setRelatorioId] = useState(null)
+  const [projetoId, setProjetoId] = useState(null)
+  // projeto de onde o relatório foi aberto: o botão "voltar" do relatório devolve a ele, não à lista
+  const [origem, setOrigem] = useState(null)
 
-  useEffect(() => { document.getElementById('pn-conteudo')?.scrollTo(0, 0) }, [pagina, relatorioId])
+  useEffect(() => { document.getElementById('pn-conteudo')?.scrollTo(0, 0) }, [pagina, relatorioId, projetoId])
 
   const abrirRelatorio = (id) => {
     setRelatorioId(id)
     setPagina('relatorios')
   }
+  const abrirRelatorioDoProjeto = (id) => {
+    setOrigem(projetoId)
+    setProjetoId(null)
+    abrirRelatorio(id)
+  }
+  const fecharRelatorio = () => {
+    setRelatorioId(null)
+    if (origem) {
+      setProjetoId(origem)
+      setPagina('projetos')
+      setOrigem(null)
+    }
+  }
   const irPara = (id) => {
     setRelatorioId(null)
+    setProjetoId(null)
+    setOrigem(null)
     setPagina(id)
   }
 
@@ -61,17 +80,17 @@ export default function PainelCliente({ usuario, aoVoltarAdmin, aoSair, aoVoltar
     <PainelShell
       modo="cliente"
       grupos={grupos}
-      caminho={['Painel do cliente', PAGINAS[pagina], ...(relatorioId ? [relatorioPorId(relatorioId).titulo] : [])]}
+      caminho={['Painel do cliente', PAGINAS[pagina], ...(relatorioId ? [relatorioPorId(relatorioId).titulo] : []), ...(projetoId ? [PROJETOS.find((p) => p.id === projetoId).beneficiario] : [])]}
       usuario={usuario}
       aviso={aviso}
       aoSair={aoSair}
       aoVoltarSite={aoVoltarSite}
     >
       {pagina === 'geral' && <PaginaVisaoGeral key="geral" aoAbrirRelatorio={abrirRelatorio} />}
-      {pagina === 'projetos' && <PaginaProjetos key="projetos" />}
+      {pagina === 'projetos' && <PaginaProjetos key="projetos" abertoId={projetoId} aoAbrir={setProjetoId} aoFechar={() => setProjetoId(null)} aoAbrirRelatorio={abrirRelatorioDoProjeto} />}
       {pagina === 'relatorios' && (
         <Suspense fallback={<p className="pn-vazio" role="status">Carregando relatórios…</p>}>
-          <PaginaRelatorios abertoId={relatorioId} aoAbrir={setRelatorioId} aoFechar={() => setRelatorioId(null)} />
+          <PaginaRelatorios abertoId={relatorioId} aoAbrir={setRelatorioId} aoFechar={fecharRelatorio} rotuloVoltar={origem ? 'Projeto' : 'Relatórios'} />
         </Suspense>
       )}
     </PainelShell>

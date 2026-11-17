@@ -1,5 +1,6 @@
-import { useRef, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import useLargura from '../../../hooks/useLargura'
+import useToqueFora from '../../../hooks/useToqueFora'
 import { compacto, moeda, numero, tetoRedondo } from '../../../lib/formatos'
 import Bloco from './Bloco'
 import VerDados from './VerDados'
@@ -43,6 +44,8 @@ function Grafico({ dados }) {
   const caixa = useRef(null)
   const L = useLargura(caixa, 640)
   const [ativo, setAtivo] = useState(null)
+  const limpar = useCallback(() => setAtivo(null), [])
+  useToqueFora(caixa, ativo !== null, limpar)
   const fmt = FORMATA[formato]
 
   const n = categorias.length
@@ -129,7 +132,16 @@ function Grafico({ dados }) {
                   <tspan key={t} x={cx} dy={k ? 14 : 0}>{t}</tspan>
                 ))}
               </text>
-              <rect className="rel-alvo" x={cx - slot / 2} y="0" width={slot} height={alt} onPointerEnter={() => setAtivo(i)} onPointerLeave={() => setAtivo(null)} />
+              <rect
+                className="rel-alvo"
+                x={cx - slot / 2}
+                y="0"
+                width={slot}
+                height={alt}
+                onPointerEnter={(e) => e.pointerType === 'mouse' && setAtivo(i)}
+                onPointerLeave={(e) => e.pointerType === 'mouse' && setAtivo(null)}
+                onPointerUp={(e) => e.pointerType !== 'mouse' && setAtivo((a) => (a === i ? null : i))}
+              />
             </g>
           )
         })}

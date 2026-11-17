@@ -81,8 +81,10 @@ export default function AcessoAdmin({ onClose, Logo, Lines }) {
 
   return (
     <div className="login-page" data-lenis-prevent>
-      <Lines side="left" />
-      <Lines side="right" />
+      <div className="login-fundo" aria-hidden="true">
+        <Lines side="left" />
+        <Lines side="right" />
+      </div>
       <button className="login-close" onClick={onClose} aria-label="Voltar para a página"><X /></button>
       <div className="login-layout">
         <div className="login-brand">

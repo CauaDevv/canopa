@@ -26,8 +26,6 @@ function CampoMagnetico({ href = '#formulario' }) {
   const botao = useRef(null)
   const palco = useRef(null)
   const rotulo = useRef(null)
-  const pausa = useRef(null)
-  const pausaTxt = useRef(null)
 
   useLayoutEffect(
     () =>
@@ -37,8 +35,6 @@ function CampoMagnetico({ href = '#formulario' }) {
         botao: botao.current,
         palco: palco.current,
         rotulo: rotulo.current,
-        pausa: pausa.current,
-        pausaTxt: pausaTxt.current,
       }),
     [],
   )
@@ -73,11 +69,6 @@ function CampoMagnetico({ href = '#formulario' }) {
           <li>Projeto em desenvolvimento</li>
         </ul>
       </div>
-      <button ref={pausa} className="campo-pause" type="button" aria-pressed="false" aria-label="Pausar animação">
-        <svg className="campo-ipa" viewBox="0 0 12 12" aria-hidden="true"><rect x="2" y="1.5" width="2.6" height="9" rx="1" /><rect x="7.4" y="1.5" width="2.6" height="9" rx="1" /></svg>
-        <svg className="campo-ipl" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 1.6v8.8a.6.6 0 0 0 .9.5l7-4.4a.6.6 0 0 0 0-1l-7-4.4a.6.6 0 0 0-.9.5z" /></svg>
-        <span ref={pausaTxt}>Pausar</span>
-      </button>
     </section>
   )
 }

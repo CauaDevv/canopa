@@ -1,9 +1,12 @@
-import { useMemo, useRef, useState } from 'react'
-import { Search, Sun } from 'lucide-react'
+import { lazy, Suspense, useMemo, useRef, useState } from 'react'
+import { ArrowRight, Search, Sun } from 'lucide-react'
 import { gsap, MIDIA, useGSAP } from '../lib/animacao'
 import { ETAPAS, PROJETOS, TIPOS } from './dados-demo'
 import { decimal, moeda } from '../lib/formatos'
 import { StatusPill } from './TabelaProjetos'
+
+// a ficha (leitor, gráficos e CSS dos relatórios) só desce quando alguém abre um projeto
+const ProjetoDetalhe = lazy(() => import('./relatorios/ProjetoDetalhe'))
 
 const normalizar = (s) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
 
@@ -25,7 +28,8 @@ function Etapas({ etapa }) {
   )
 }
 
-export default function PaginaProjetos() {
+/* Lista de projetos: busca e cartões. Os ganchos (animação, busca) ficam aqui para só rodarem quando a lista existe. */
+function Lista({ aoAbrir }) {
   const raiz = useRef(null)
   const [busca, setBusca] = useState('')
   const lista = useMemo(() => {
@@ -49,7 +53,7 @@ export default function PaginaProjetos() {
         <div>
           <p className="pn-eyebrow pn-eyebrow--escuro">Projetos</p>
           <h1>Projetos apadrinhados</h1>
-          <p>Cada projeto percorre as mesmas etapas, da inscrição à operação.</p>
+          <p>Cada projeto percorre as mesmas etapas, da inscrição à operação. Abra um projeto para ver os números, a geração, a jornada e os relatórios dele.</p>
         </div>
       </header>
 
@@ -67,7 +71,9 @@ export default function PaginaProjetos() {
               </span>
               <StatusPill status={p.status} />
             </header>
-            <h2>{p.beneficiario}</h2>
+            <h2>
+              <button type="button" className="pn-projeto-abrir" onClick={() => aoAbrir(p.id)}>{p.beneficiario}</button>
+            </h2>
             <p className="pn-projeto-parceiro"><Sun size={15} aria-hidden="true" /> Apadrinhado por <strong>{p.parceiro}</strong> · desde {p.desde}</p>
             <Etapas etapa={p.etapa} />
             <dl className="pn-projeto-dados">
@@ -76,10 +82,20 @@ export default function PaginaProjetos() {
               <div><dt>Potência</dt><dd>{decimal(p.kwp, 1)} kWp</dd></div>
               <div><dt>CO₂ evitado</dt><dd>{decimal(p.co2, 1)} t/ano</dd></div>
             </dl>
+            <p className="pn-projeto-mais" aria-hidden="true">Ver detalhes <ArrowRight size={16} /></p>
           </li>
         ))}
       </ul>
       {lista.length === 0 && <p className="pn-vazio">Nenhum projeto encontrado para “{busca}”.</p>}
     </div>
+  )
+}
+
+export default function PaginaProjetos({ abertoId, aoAbrir, aoFechar, aoAbrirRelatorio }) {
+  if (!abertoId) return <Lista aoAbrir={aoAbrir} />
+  return (
+    <Suspense fallback={<p className="pn-vazio" role="status">Abrindo o projeto…</p>}>
+      <ProjetoDetalhe id={abertoId} aoVoltar={aoFechar} aoAbrirRelatorio={aoAbrirRelatorio} />
+    </Suspense>
   )
 }

@@ -13,8 +13,10 @@ import Notas from './blocos/Notas'
 import Numeros from './blocos/Numeros'
 import Progresso from './blocos/Progresso'
 import Projetos from './blocos/Projetos'
+import Relacionados from './blocos/Relacionados'
+import './relatorios.css'
 
-const BLOCOS = { numeros: Numeros, barras: Barras, calendario: Calendario, composicao: Composicao, tempo: LinhaTempo, projetos: Projetos, progresso: Progresso, destaque: Destaque, notas: Notas }
+const BLOCOS = { numeros: Numeros, barras: Barras, calendario: Calendario, composicao: Composicao, tempo: LinhaTempo, projetos: Projetos, progresso: Progresso, destaque: Destaque, notas: Notas, relacionados: Relacionados }
 
 /*
   Leitor de relatório: capa, blocos em sequência e uma barra fixa com a saída, o
@@ -22,7 +24,7 @@ const BLOCOS = { numeros: Numeros, barras: Barras, calendario: Calendario, compo
   (a folha de estilo de impressão em relatorios.css deixa só o relatório); antes de
   imprimir, tudo é revelado de uma vez, porque nada pode ficar esperando rolagem.
 */
-export default function RelatorioLeitor({ relatorio: r, aoVoltar }) {
+export default function RelatorioLeitor({ relatorio: r, aoVoltar, rotuloVoltar = 'Relatórios', aoAbrirRelatorio }) {
   const [tudo, setTudo] = useState(false)
   const barra = useRef(null)
   const titulo = useRef(null)
@@ -74,11 +76,11 @@ export default function RelatorioLeitor({ relatorio: r, aoVoltar }) {
   }, [r.id])
 
   return (
-    <RelatorioContexto.Provider value={{ tudo }}>
+    <RelatorioContexto.Provider value={{ tudo, abrirRelatorio: aoAbrirRelatorio }}>
       <article className="rel" aria-labelledby="rel-titulo">
         <div className="rel-barra">
           <button type="button" className="pn-botao pn-botao--fantasma" onClick={aoVoltar}>
-            <ArrowLeft size={16} aria-hidden="true" /> Relatórios
+            <ArrowLeft size={16} aria-hidden="true" /> {rotuloVoltar}
           </button>
           <p className="rel-barra-titulo"><T.Icone size={15} aria-hidden="true" /> {r.titulo}</p>
           <button type="button" className="pn-botao pn-botao--escuro" onClick={() => window.print()} title="Abre a impressão: escolha “Salvar como PDF”">

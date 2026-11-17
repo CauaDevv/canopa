@@ -9,13 +9,23 @@ import DuasPontas from './secoes/DuasPontas'
 import Faixa from './secoes/Faixa'
 import Hero from './secoes/Hero'
 import Impacto from './secoes/Impacto'
-import Jornada from './secoes/Jornada'
 import Rodape from './secoes/Rodape'
+import { ALTURA_RESERVADA } from './secoes/jornada/reserva'
 import Simulador from './secoes/Simulador'
 import Sobre from './secoes/Sobre'
 
 // o painel (gráficos, tabelas, tela de acesso) só desce quando alguém abre o acesso da equipe
 const AcessoAdmin = lazy(() => import('./painel/AcessoAdmin'))
+
+// a Jornada (quatro ilustrações animadas) vem depois da primeira tela: só é pedida com o navegador ocioso
+// (um `lazy` sozinho pede o bloco já no primeiro render, na frente do que pinta a tela). Enquanto isso, o
+// marcador ocupa a MESMA altura que ela terá (CSS puro), então nada se mexe quando ela chega.
+const carregarJornada = () => import('./secoes/Jornada')
+const Jornada = lazy(carregarJornada)
+function ReservaJornada() {
+  const palco = !window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  return <section aria-hidden="true" style={{ background: '#e3f5f5', height: palco ? ALTURA_RESERVADA : '100svh' }} />
+}
 
 // a janela do formulário também: não aparece na página e só é baixada (e montada) quando preciso
 const carregarContato = () => import('./secoes/Contato')
@@ -27,6 +37,7 @@ export default function App() {
   const [contatoAberto, setContatoAberto] = useState(false)
   const [contatoMontado, setContatoMontado] = useState(false)
   const origem = useRef(null)
+  const [jornadaPronta, setJornadaPronta] = useState(false)
 
   const abrirContato = useCallback((quem) => {
     origem.current = quem || document.activeElement
@@ -61,7 +72,10 @@ export default function App() {
   // aquece o bloco do formulário quando o navegador está ocioso: o primeiro clique não espera download
   useEffect(() => {
     const quando = window.requestIdleCallback || ((fn) => window.setTimeout(fn, 3500))
-    const id = quando(() => carregarContato())
+    const id = quando(() => {
+      carregarContato()
+      carregarJornada().then(() => setJornadaPronta(true))
+    })
     return () => (window.cancelIdleCallback ? window.cancelIdleCallback(id) : window.clearTimeout(id))
   }, [])
 
@@ -72,7 +86,13 @@ export default function App() {
         <Hero />
         <Sobre />
         <DuasPontas />
-        <Jornada />
+        {jornadaPronta ? (
+          <Suspense fallback={<ReservaJornada />}>
+            <Jornada />
+          </Suspense>
+        ) : (
+          <ReservaJornada />
+        )}
         <ComoFunciona />
         <Impacto />
         <Simulador />

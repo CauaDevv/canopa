@@ -194,7 +194,7 @@
 .sim-grafico figcaption { margin-bottom: 6px; font: 600 12px/1.2 'DM Sans', sans-serif; letter-spacing: .06em; text-transform: uppercase; color: var(--sim-claro-muda); }
 .sim-gcaixa { position: relative; border-radius: 8px; }
 .sim-gcaixa:focus-visible { outline: 2px solid var(--sim-ouro); outline-offset: 4px; }
-.sim-g { display: block; max-width: 100%; overflow: visible; }
+.sim-g { display: block; max-width: 100%; overflow: visible; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent; }
 .sim-g-grade { stroke: rgba(236, 250, 249, .12); stroke-width: 1; }
 .sim-g-texto { fill: var(--sim-claro-muda); font: 500 11.5px 'DM Sans', sans-serif; }
 .sim-g-destaque { fill: #fff; font-weight: 700; }
